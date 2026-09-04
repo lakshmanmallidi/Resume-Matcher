@@ -212,6 +212,11 @@ class Database:
             "status": row.status,
             "company": row.company,
             "role": row.role,
+            "ctc_amount": row.ctc_amount,
+            "ctc_multiplier": row.ctc_multiplier,
+            "ctc_currency": row.ctc_currency,
+            "contact_name": row.contact_name,
+            "contact_phone": row.contact_phone,
             "applied_at": row.applied_at,
             "notes": row.notes,
             "position": row.position,
@@ -543,6 +548,11 @@ class Database:
         status: str = "applied",
         company: str | None = None,
         role: str | None = None,
+        ctc_amount: float | None = None,
+        ctc_multiplier: str | None = None,
+        ctc_currency: str | None = None,
+        contact_name: str | None = None,
+        contact_phone: str | None = None,
         applied_at: str | None = None,
         notes: str | None = None,
     ) -> dict[str, Any]:
@@ -573,6 +583,11 @@ class Database:
                 status=status,
                 company=company,
                 role=role,
+                ctc_amount=ctc_amount,
+                ctc_multiplier=ctc_multiplier,
+                ctc_currency=ctc_currency,
+                contact_name=contact_name,
+                contact_phone=contact_phone,
                 applied_at=applied_at,
                 notes=notes,
                 position=position,
@@ -740,7 +755,17 @@ class Database:
             new_status = updates.get("status", old_status)
             target_position = updates.get("position", None)
 
-            for key in ("company", "role", "applied_at", "notes"):
+            for key in (
+                "company",
+                "role",
+                "ctc_amount",
+                "ctc_multiplier",
+                "ctc_currency",
+                "contact_name",
+                "contact_phone",
+                "applied_at",
+                "notes",
+            ):
                 if key in updates:
                     setattr(row, key, updates[key])
 

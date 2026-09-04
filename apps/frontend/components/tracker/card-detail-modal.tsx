@@ -126,6 +126,37 @@ export function CardDetailModal({
               )}
             </div>
 
+            {(detail.ctc_amount !== null || detail.contact_name || detail.contact_phone) && (
+              <div className="grid gap-3 border border-black bg-paper-tint p-3 sm:grid-cols-2">
+                {detail.ctc_amount !== null && detail.ctc_multiplier && (
+                  <div className="space-y-1">
+                    <Label>{t('tracker.modal.compensation')}</Label>
+                    <p className="font-mono text-sm font-bold text-ink">
+                      {detail.ctc_currency && `${detail.ctc_currency} `}
+                      {detail.ctc_amount}
+                      {detail.ctc_multiplier}
+                    </p>
+                  </div>
+                )}
+                {(detail.contact_name || detail.contact_phone) && (
+                  <div className="space-y-1">
+                    <Label>{t('tracker.modal.contact')}</Label>
+                    {detail.contact_name && (
+                      <p className="text-sm text-ink">{detail.contact_name}</p>
+                    )}
+                    {detail.contact_phone && (
+                      <a
+                        href={`tel:${detail.contact_phone}`}
+                        className="font-mono text-sm text-primary underline"
+                      >
+                        {detail.contact_phone}
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="space-y-1">
               <Label>{t('tracker.modal.jobDescription')}</Label>
               <div className="max-h-48 overflow-y-auto whitespace-pre-wrap border border-black bg-background p-3 text-sm">

@@ -17,7 +17,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dropdown } from '@/components/ui/dropdown';
 import { useTranslations } from '@/lib/i18n';
 import { fetchResumeList, type ResumeListItem } from '@/lib/api/resume';
-import { createApplication, type ApplicationStatus, type TrackerColumn } from '@/lib/api/tracker';
+import {
+  APPLICATION_CURRENCIES,
+  APPLICATION_CTC_MULTIPLIERS,
+  createApplication,
+  type ApplicationCtcMultiplier,
+  type ApplicationStatus,
+  type TrackerColumn,
+} from '@/lib/api/tracker';
 
 interface ManualAddApplicationDialogProps {
   open: boolean;
@@ -38,6 +45,11 @@ export function ManualAddApplicationDialog({
   const [jobDescription, setJobDescription] = useState('');
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('');
+  const [ctcAmount, setCtcAmount] = useState('');
+  const [ctcMultiplier, setCtcMultiplier] = useState<ApplicationCtcMultiplier>('L');
+  const [ctcCurrency, setCtcCurrency] = useState('INR');
+  const [contactName, setContactName] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +76,11 @@ export function ManualAddApplicationDialog({
     setJobDescription('');
     setCompany('');
     setRole('');
+    setCtcAmount('');
+    setCtcMultiplier('L');
+    setCtcCurrency('INR');
+    setContactName('');
+    setContactPhone('');
     setStatus('applied');
     setError(null);
   };
@@ -81,6 +98,11 @@ export function ManualAddApplicationDialog({
         job_description: jobDescription.trim(),
         company: company.trim() || undefined,
         role: role.trim() || undefined,
+        ctc_amount: ctcAmount === '' ? undefined : Number(ctcAmount),
+        ctc_multiplier: ctcAmount === '' ? undefined : ctcMultiplier,
+        ctc_currency: ctcAmount === '' ? undefined : ctcCurrency,
+        contact_name: contactName.trim() || undefined,
+        contact_phone: contactPhone.trim() || undefined,
         status,
       });
       reset();
@@ -108,6 +130,33 @@ export function ManualAddApplicationDialog({
               options={resumes.map((r) => ({ id: r.resume_id, label: resumeLabel(r) }))}
               value={resumeId}
               onChange={setResumeId}
+            />
+          </div>
+
+          <div className="grid grid-cols-[1.2fr_1fr_1.2fr] gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="manual-ctc-amount">{t('tracker.manualAdd.ctc')}</Label>
+              <Input
+                id="manual-ctc-amount"
+                type="number"
+                min="0"
+                step="any"
+                value={ctcAmount}
+                onChange={(e) => setCtcAmount(e.target.value)}
+                placeholder={t('tracker.manualAdd.optional')}
+              />
+            </div>
+            <Dropdown
+              label={t('tracker.manualAdd.multiplier')}
+              options={APPLICATION_CTC_MULTIPLIERS.map((value) => ({ id: value, label: value }))}
+              value={ctcMultiplier}
+              onChange={(value) => setCtcMultiplier(value as ApplicationCtcMultiplier)}
+            />
+            <Dropdown
+              label={t('tracker.manualAdd.currency')}
+              options={APPLICATION_CURRENCIES}
+              value={ctcCurrency}
+              onChange={setCtcCurrency}
             />
           </div>
 
@@ -139,6 +188,28 @@ export function ManualAddApplicationDialog({
                 id="manual-role"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
+                placeholder={t('tracker.manualAdd.optional')}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="manual-contact-name">{t('tracker.manualAdd.contactName')}</Label>
+              <Input
+                id="manual-contact-name"
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                placeholder={t('tracker.manualAdd.optional')}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="manual-contact-phone">{t('tracker.manualAdd.contactPhone')}</Label>
+              <Input
+                id="manual-contact-phone"
+                type="tel"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
                 placeholder={t('tracker.manualAdd.optional')}
               />
             </div>

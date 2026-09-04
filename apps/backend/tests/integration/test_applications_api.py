@@ -130,6 +130,25 @@ class TestManualAdd:
         assert body["status"] == "saved"
         assert body["applied_at"] is None  # saved is not applied yet
 
+    async def test_manual_add_round_trips_compensation(self, isolated_db):
+        async with _client() as client:
+            resp = await client.post(
+                "/api/v1/applications",
+                json={
+                    "resume_id": "res-1",
+                    "job_description": "JD text",
+                    "company": "Given Co",
+                    "role": "Given Role",
+                    "ctc_amount": 50,
+                    "ctc_multiplier": "L",
+                    "ctc_currency": "INR",
+                },
+            )
+        assert resp.status_code == 200
+        assert resp.json()["ctc_amount"] == 50
+        assert resp.json()["ctc_multiplier"] == "L"
+        assert resp.json()["ctc_currency"] == "INR"
+
 
 class TestDetail:
     async def test_detail_embeds_job_and_resume(self, isolated_db):

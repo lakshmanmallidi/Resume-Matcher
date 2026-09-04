@@ -64,6 +64,11 @@ class ApplicationResponse(BaseModel):
     status: str
     company: str | None = None
     role: str | None = None
+    ctc_amount: float | None = Field(default=None, ge=0)
+    ctc_multiplier: str | None = None
+    ctc_currency: str | None = None
+    contact_name: str | None = None
+    contact_phone: str | None = None
     applied_at: str | None = None
     notes: str | None = None
     position: int
@@ -101,6 +106,11 @@ class ManualApplicationCreate(BaseModel):
     job_description: str = Field(min_length=1)
     company: str | None = None
     role: str | None = None
+    ctc_amount: float | None = Field(default=None, ge=0)
+    ctc_multiplier: str | None = None
+    ctc_currency: str | None = None
+    contact_name: str | None = None
+    contact_phone: str | None = None
     status: str = ApplicationStatus.applied.value
     notes: str | None = None
 
@@ -113,6 +123,11 @@ class ApplicationUpdate(BaseModel):
     notes: str | None = None
     company: str | None = None
     role: str | None = None
+    ctc_amount: float | None = Field(default=None, ge=0)
+    ctc_multiplier: str | None = None
+    ctc_currency: str | None = None
+    contact_name: str | None = None
+    contact_phone: str | None = None
     applied_at: str | None = None
 
 

@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy import JSON, Boolean, Index, Integer, String, Text, UniqueConstraint, text
+from sqlalchemy import Float
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -115,6 +116,11 @@ class Application(Base):
     status: Mapped[str] = mapped_column(String, default="applied", index=True)
     company: Mapped[str | None] = mapped_column(String, nullable=True)
     role: Mapped[str | None] = mapped_column(String, nullable=True)
+    ctc_amount: Mapped[float | None] = mapped_column(Float, nullable=True)
+    ctc_multiplier: Mapped[str | None] = mapped_column(String, nullable=True)
+    ctc_currency: Mapped[str | None] = mapped_column(String, nullable=True)
+    contact_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    contact_phone: Mapped[str | None] = mapped_column(String, nullable=True)
     applied_at: Mapped[str | None] = mapped_column(String, nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     position: Mapped[int] = mapped_column(Integer, default=0)

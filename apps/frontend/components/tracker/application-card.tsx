@@ -60,9 +60,17 @@ export function ApplicationCard({
             onClick={() => onOpen(application.application_id)}
             className="min-w-0 flex-1 text-left"
           >
-            <p className="truncate text-sm font-semibold text-ink">
-              {company || t('tracker.card.companyUnknown')}
-            </p>
+            <div className="flex items-start justify-between gap-3">
+              <p className="min-w-0 truncate text-sm font-semibold text-ink">
+                {company || t('tracker.card.companyUnknown')}
+              </p>
+              {application.ctc_amount !== null && application.ctc_multiplier && (
+                <span className="shrink-0 font-mono text-xs font-bold text-ink">
+                  {application.ctc_amount}
+                  {application.ctc_multiplier}
+                </span>
+              )}
+            </div>
             <p className="truncate font-mono text-xs text-ink-soft">
               {role || t('tracker.card.roleUnknown')}
             </p>

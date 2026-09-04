@@ -163,6 +163,11 @@ async def create_application(request: ManualApplicationCreate) -> ApplicationRes
             status=request.status,
             company=company,
             role=role,
+            ctc_amount=request.ctc_amount,
+            ctc_multiplier=request.ctc_multiplier,
+            ctc_currency=request.ctc_currency,
+            contact_name=request.contact_name,
+            contact_phone=request.contact_phone,
             notes=request.notes,
         )
     except Exception as e:

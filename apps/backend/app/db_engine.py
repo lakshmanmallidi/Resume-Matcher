@@ -69,3 +69,16 @@ def init_models_sync(engine: Engine) -> None:
         columns = conn.exec_driver_sql("PRAGMA table_info(resumes)").mappings().all()
         if columns and "interview_prep" not in {column["name"] for column in columns}:
             conn.exec_driver_sql("ALTER TABLE resumes ADD COLUMN interview_prep TEXT")
+        application_columns = conn.exec_driver_sql("PRAGMA table_info(applications)").mappings().all()
+        existing_application_columns = {column["name"] for column in application_columns}
+        for column_name, column_type in (
+            ("ctc_amount", "REAL"),
+            ("ctc_multiplier", "TEXT"),
+            ("ctc_currency", "TEXT"),
+            ("contact_name", "TEXT"),
+            ("contact_phone", "TEXT"),
+        ):
+            if application_columns and column_name not in existing_application_columns:
+                conn.exec_driver_sql(
+                    f"ALTER TABLE applications ADD COLUMN {column_name} {column_type}"
+                )

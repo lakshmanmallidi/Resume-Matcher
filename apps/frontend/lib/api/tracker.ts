@@ -13,6 +13,16 @@ export const APPLICATION_STATUS_ORDER: ApplicationStatus[] = [
   'rejected',
 ];
 
+export const APPLICATION_CTC_MULTIPLIERS = ['K', 'L', 'M', 'Cr', 'B'] as const;
+export type ApplicationCtcMultiplier = (typeof APPLICATION_CTC_MULTIPLIERS)[number];
+
+const FALLBACK_CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'JPY', 'AUD', 'CAD'];
+export const APPLICATION_CURRENCIES = (
+  typeof Intl.supportedValuesOf === 'function'
+    ? Intl.supportedValuesOf('currency')
+    : FALLBACK_CURRENCIES
+).map((currency) => ({ id: currency, label: currency }));
+
 export interface Application {
   application_id: string;
   job_id: string;
@@ -21,6 +31,11 @@ export interface Application {
   status: ApplicationStatus;
   company: string | null;
   role: string | null;
+  ctc_amount: number | null;
+  ctc_multiplier: string | null;
+  ctc_currency: string | null;
+  contact_name: string | null;
+  contact_phone: string | null;
   applied_at: string | null;
   notes: string | null;
   position: number;
@@ -62,6 +77,11 @@ export interface ManualApplicationCreate {
   job_description: string;
   company?: string;
   role?: string;
+  ctc_amount?: number;
+  ctc_multiplier?: ApplicationCtcMultiplier;
+  ctc_currency?: string;
+  contact_name?: string;
+  contact_phone?: string;
   status?: ApplicationStatus;
   notes?: string;
 }
@@ -72,6 +92,11 @@ export interface ApplicationUpdate {
   notes?: string;
   company?: string;
   role?: string;
+  ctc_amount?: number | null;
+  ctc_multiplier?: ApplicationCtcMultiplier | null;
+  ctc_currency?: string | null;
+  contact_name?: string | null;
+  contact_phone?: string | null;
   applied_at?: string;
 }
 
