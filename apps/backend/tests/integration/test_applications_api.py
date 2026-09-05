@@ -149,6 +149,19 @@ class TestManualAdd:
         assert resp.json()["ctc_multiplier"] == "L"
         assert resp.json()["ctc_currency"] == "INR"
 
+    async def test_manual_add_accepts_custom_application_date(self, isolated_db):
+        async with _client() as client:
+            resp = await client.post(
+                "/api/v1/applications",
+                json={
+                    "resume_id": "res-1",
+                    "job_description": "JD text",
+                    "applied_at": "2026-01-15",
+                },
+            )
+        assert resp.status_code == 200
+        assert resp.json()["applied_at"] == "2026-01-15"
+
 
 class TestDetail:
     async def test_detail_embeds_job_and_resume(self, isolated_db):
@@ -204,6 +217,32 @@ class TestUpdateAndMove:
         body = resp.json()
         assert body["notes"] == "Recruiter call Friday"
         assert body["company"] == "NewCo"
+
+    async def test_patch_all_application_metadata(self, isolated_db):
+        card = await _seed_card(isolated_db)
+        async with _client() as client:
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={
+                    "company": "Updated Co",
+                    "role": "Principal Engineer",
+                    "ctc_amount": 42,
+                    "ctc_multiplier": "L",
+                    "ctc_currency": "INR",
+                    "contact_name": "Sam",
+                    "contact_phone": "+1 555 0100",
+                    "applied_at": "2025-12-31",
+                    "notes": "Follow up next week",
+                },
+            )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["company"] == "Updated Co"
+        assert body["role"] == "Principal Engineer"
+        assert body["ctc_amount"] == 42
+        assert body["contact_name"] == "Sam"
+        assert body["applied_at"] == "2025-12-31"
+        assert body["notes"] == "Follow up next week"
 
     async def test_patch_unknown_returns_404(self, isolated_db):
         async with _client() as client:

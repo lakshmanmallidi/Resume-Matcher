@@ -1030,6 +1030,7 @@
       "compensation": "CTC / ano",
       "contact": "Pessoa de contato",
       "saveNotes": "Salvar notas",
+      "saveChanges": "Salvar alterações",
       "resumeUnavailable": "O currículo enviado não está mais disponível.",
       "loadFailed": "Não foi possível carregar esta candidatura.",
       "editResume": "Editar currículo"
@@ -1055,6 +1056,7 @@
       "currency": "Moeda",
       "contactName": "Nome do contato",
       "contactPhone": "Telefone do contato",
+      "applicationDate": "Data da candidatura",
       "optional": "Opcional",
       "status": "Status",
       "submit": "Adicionar",

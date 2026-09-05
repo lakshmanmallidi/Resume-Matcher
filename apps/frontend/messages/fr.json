@@ -1030,6 +1030,7 @@
       "compensation": "CTC / an",
       "contact": "Personne à contacter",
       "saveNotes": "Enregistrer les notes",
+      "saveChanges": "Enregistrer les modifications",
       "resumeUnavailable": "Le CV soumis n'est plus disponible.",
       "loadFailed": "Impossible de charger cette candidature.",
       "editResume": "Modifier le CV"
@@ -1055,6 +1056,7 @@
       "currency": "Devise",
       "contactName": "Nom du contact",
       "contactPhone": "Téléphone du contact",
+      "applicationDate": "Date de candidature",
       "optional": "Optionnel",
       "status": "Statut",
       "submit": "Ajouter",

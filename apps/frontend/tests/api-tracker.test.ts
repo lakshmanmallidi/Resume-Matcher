@@ -59,11 +59,21 @@ describe('tracker API client', () => {
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify({ application_id: 'x' }), { status: 200 })
     );
-    await updateApplication('x', { status: 'rejected', position: 0 });
+    await updateApplication('x', {
+      status: 'rejected',
+      position: 0,
+      applied_at: '2026-09-05',
+      contact_name: null,
+    });
     const { url, options } = lastCall();
     expect(url).toContain('/applications/x');
     expect(options.method).toBe('PATCH');
-    expect(JSON.parse(String(options.body))).toEqual({ status: 'rejected', position: 0 });
+    expect(JSON.parse(String(options.body))).toEqual({
+      status: 'rejected',
+      position: 0,
+      applied_at: '2026-09-05',
+      contact_name: null,
+    });
   });
 
   it('createApplication POSTs the manual-add payload', async () => {

@@ -13,13 +13,18 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Dropdown } from '@/components/ui/dropdown';
 import { useTranslations } from '@/lib/i18n';
 import {
-  APPLICATION_STATUS_ORDER,
+  APPLICATION_CURRENCIES,
+  APPLICATION_CTC_MULTIPLIERS,
   getApplicationDetail,
   updateApplication,
+  type ApplicationCtcMultiplier,
+  type ApplicationStatus,
   type ApplicationDetail,
   type TrackerColumn,
 } from '@/lib/api/tracker';
@@ -43,8 +48,17 @@ export function CardDetailModal({
   const router = useRouter();
   const [detail, setDetail] = useState<ApplicationDetail | null>(null);
   const [loading, setLoading] = useState(false);
+  const [company, setCompany] = useState('');
+  const [role, setRole] = useState('');
+  const [ctcAmount, setCtcAmount] = useState('');
+  const [ctcMultiplier, setCtcMultiplier] = useState<ApplicationCtcMultiplier>('L');
+  const [ctcCurrency, setCtcCurrency] = useState('INR');
+  const [contactName, setContactName] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [applicationDate, setApplicationDate] = useState('');
+  const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [notes, setNotes] = useState('');
-  const [savingNotes, setSavingNotes] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [notesError, setNotesError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,6 +72,15 @@ export function CardDetailModal({
       .then((data) => {
         if (cancelled) return;
         setDetail(data);
+        setCompany(data.company ?? '');
+        setRole(data.role ?? '');
+        setCtcAmount(data.ctc_amount === null ? '' : String(data.ctc_amount));
+        setCtcMultiplier((data.ctc_multiplier as ApplicationCtcMultiplier) || 'L');
+        setCtcCurrency(data.ctc_currency || 'INR');
+        setContactName(data.contact_name ?? '');
+        setContactPhone(data.contact_phone ?? '');
+        setApplicationDate(data.applied_at ? data.applied_at.slice(0, 10) : '');
+        setStatus(data.status);
         setNotes(data.notes ?? '');
         setNotesError(null);
       })
@@ -77,19 +100,31 @@ export function CardDetailModal({
     if (e.key === 'Enter') e.stopPropagation();
   };
 
-  const handleSaveNotes = async () => {
+  const handleSave = async () => {
     if (!applicationId) return;
-    setSavingNotes(true);
+    setSaving(true);
     setNotesError(null);
     try {
-      await updateApplication(applicationId, { notes });
+      const updated = await updateApplication(applicationId, {
+        company: company.trim() || null,
+        role: role.trim() || null,
+        ctc_amount: ctcAmount === '' ? null : Number(ctcAmount),
+        ctc_multiplier: ctcAmount === '' ? null : ctcMultiplier,
+        ctc_currency: ctcAmount === '' ? null : ctcCurrency,
+        contact_name: contactName.trim() || null,
+        contact_phone: contactPhone.trim() || null,
+        applied_at: applicationDate || null,
+        status,
+        notes,
+      });
+      setDetail((current) => (current ? { ...current, ...updated } : current));
       onUpdated();
     } catch {
       // Show a generic message — never echo raw backend error text inline,
       // which could contain sensitive values.
       setNotesError(t('common.error'));
     } finally {
-      setSavingNotes(false);
+      setSaving(false);
     }
   };
 
@@ -109,53 +144,89 @@ export function CardDetailModal({
           </div>
         ) : detail ? (
           <div className="space-y-4">
-            <div className="flex items-center gap-2 font-mono text-xs uppercase text-ink-soft">
-              <span className="border border-black bg-paper-tint px-2 py-0.5">
-                {APPLICATION_STATUS_ORDER.includes(detail.status)
-                  ? t(`tracker.columns.${detail.status}`)
-                  : (columns.find((column) => column.column_id === detail.status)?.label ??
-                    detail.status)}
-              </span>
-              {detail.applied_at && (
-                <span>
-                  {new Date(detail.applied_at).toLocaleDateString('en-US', {
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </span>
-              )}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label htmlFor="card-company">{t('tracker.manualAdd.company')}</Label>
+                <Input
+                  id="card-company"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="card-role">{t('tracker.manualAdd.role')}</Label>
+                <Input id="card-role" value={role} onChange={(e) => setRole(e.target.value)} />
+              </div>
             </div>
 
-            {(detail.ctc_amount !== null || detail.contact_name || detail.contact_phone) && (
-              <div className="grid gap-3 border border-black bg-paper-tint p-3 sm:grid-cols-2">
-                {detail.ctc_amount !== null && detail.ctc_multiplier && (
-                  <div className="space-y-1">
-                    <Label>{t('tracker.modal.compensation')}</Label>
-                    <p className="font-mono text-sm font-bold text-ink">
-                      {detail.ctc_currency && `${detail.ctc_currency} `}
-                      {detail.ctc_amount}
-                      {detail.ctc_multiplier}
-                    </p>
-                  </div>
-                )}
-                {(detail.contact_name || detail.contact_phone) && (
-                  <div className="space-y-1">
-                    <Label>{t('tracker.modal.contact')}</Label>
-                    {detail.contact_name && (
-                      <p className="text-sm text-ink">{detail.contact_name}</p>
-                    )}
-                    {detail.contact_phone && (
-                      <a
-                        href={`tel:${detail.contact_phone}`}
-                        className="font-mono text-sm text-primary underline"
-                      >
-                        {detail.contact_phone}
-                      </a>
-                    )}
-                  </div>
-                )}
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="space-y-1">
+                <Label htmlFor="card-ctc-amount">{t('tracker.manualAdd.ctc')}</Label>
+                <Input
+                  id="card-ctc-amount"
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={ctcAmount}
+                  onChange={(e) => setCtcAmount(e.target.value)}
+                />
               </div>
-            )}
+              <Dropdown
+                label={t('tracker.manualAdd.multiplier')}
+                options={APPLICATION_CTC_MULTIPLIERS.map((value) => ({ id: value, label: value }))}
+                value={ctcMultiplier}
+                onChange={(value) => setCtcMultiplier(value as ApplicationCtcMultiplier)}
+              />
+              <Dropdown
+                label={t('tracker.manualAdd.currency')}
+                options={APPLICATION_CURRENCIES}
+                value={ctcCurrency}
+                onChange={setCtcCurrency}
+              />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label htmlFor="card-contact-name">{t('tracker.manualAdd.contactName')}</Label>
+                <Input
+                  id="card-contact-name"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="card-contact-phone">{t('tracker.manualAdd.contactPhone')}</Label>
+                <Input
+                  id="card-contact-phone"
+                  type="tel"
+                  value={contactPhone}
+                  onChange={(e) => setContactPhone(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label htmlFor="card-application-date">
+                  {t('tracker.manualAdd.applicationDate')}
+                </Label>
+                <Input
+                  id="card-application-date"
+                  type="date"
+                  value={applicationDate}
+                  onChange={(e) => setApplicationDate(e.target.value)}
+                />
+              </div>
+              <Dropdown
+                label={t('tracker.manualAdd.status')}
+                options={columns.map((column) => ({
+                  id: column.column_id,
+                  label: column.is_system ? t(`tracker.columns.${column.column_id}`) : column.label,
+                }))}
+                value={status}
+                onChange={(value) => setStatus(value as ApplicationStatus)}
+              />
+            </div>
 
             <div className="space-y-1">
               <Label>{t('tracker.modal.jobDescription')}</Label>
@@ -178,16 +249,11 @@ export function CardDetailModal({
                 {notesError && (
                   <span className="font-mono text-xs text-destructive">{notesError}</span>
                 )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleSaveNotes}
-                  disabled={savingNotes}
-                >
-                  {savingNotes ? (
+                <Button size="sm" variant="outline" onClick={handleSave} disabled={saving}>
+                  {saving ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    t('tracker.modal.saveNotes')
+                    t('tracker.modal.saveChanges')
                   )}
                 </Button>
               </div>

@@ -26,6 +26,13 @@ import {
   type TrackerColumn,
 } from '@/lib/api/tracker';
 
+const getToday = (): string => {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${today.getFullYear()}-${month}-${day}`;
+};
+
 interface ManualAddApplicationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -50,6 +57,7 @@ export function ManualAddApplicationDialog({
   const [ctcCurrency, setCtcCurrency] = useState('INR');
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
+  const [applicationDate, setApplicationDate] = useState(getToday());
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +89,7 @@ export function ManualAddApplicationDialog({
     setCtcCurrency('INR');
     setContactName('');
     setContactPhone('');
+    setApplicationDate(getToday());
     setStatus('applied');
     setError(null);
   };
@@ -103,6 +112,7 @@ export function ManualAddApplicationDialog({
         ctc_currency: ctcAmount === '' ? undefined : ctcCurrency,
         contact_name: contactName.trim() || undefined,
         contact_phone: contactPhone.trim() || undefined,
+        applied_at: applicationDate || undefined,
         status,
       });
       reset();
@@ -215,16 +225,29 @@ export function ManualAddApplicationDialog({
             </div>
           </div>
 
-          <div className="space-y-1">
-            <Label>{t('tracker.manualAdd.status')}</Label>
-            <Dropdown
-              options={columns.map((column) => ({
-                id: column.column_id,
-                label: column.is_system ? t(`tracker.columns.${column.column_id}`) : column.label,
-              }))}
-              value={status}
-              onChange={(value) => setStatus(value as ApplicationStatus)}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="manual-application-date">
+                {t('tracker.manualAdd.applicationDate')}
+              </Label>
+              <Input
+                id="manual-application-date"
+                type="date"
+                value={applicationDate}
+                onChange={(e) => setApplicationDate(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>{t('tracker.manualAdd.status')}</Label>
+              <Dropdown
+                options={columns.map((column) => ({
+                  id: column.column_id,
+                  label: column.is_system ? t(`tracker.columns.${column.column_id}`) : column.label,
+                }))}
+                value={status}
+                onChange={(value) => setStatus(value as ApplicationStatus)}
+              />
+            </div>
           </div>
 
           {error && <p className="font-mono text-xs text-destructive">{error}</p>}

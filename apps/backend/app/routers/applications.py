@@ -168,6 +168,7 @@ async def create_application(request: ManualApplicationCreate) -> ApplicationRes
             ctc_currency=request.ctc_currency,
             contact_name=request.contact_name,
             contact_phone=request.contact_phone,
+            applied_at=request.applied_at,
             notes=request.notes,
         )
     except Exception as e:
@@ -227,7 +228,7 @@ async def bulk_update_applications(request: BulkStatusUpdate) -> ApplicationActi
 
 @router.patch("/{application_id}", response_model=ApplicationResponse)
 async def update_application(application_id: str, request: ApplicationUpdate) -> ApplicationResponse:
-    """Update a card (status/position/notes/company/role/applied_at)."""
+    """Update a card's editable metadata and board position."""
     updates = request.model_dump(exclude_unset=True)
     # Normalize the enum to its stable string value for the data layer.
     if "status" in updates and updates["status"] is not None:

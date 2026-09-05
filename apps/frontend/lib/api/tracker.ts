@@ -82,6 +82,7 @@ export interface ManualApplicationCreate {
   ctc_currency?: string;
   contact_name?: string;
   contact_phone?: string;
+  applied_at?: string;
   status?: ApplicationStatus;
   notes?: string;
 }
@@ -90,14 +91,14 @@ export interface ApplicationUpdate {
   status?: ApplicationStatus;
   position?: number;
   notes?: string;
-  company?: string;
-  role?: string;
+  company?: string | null;
+  role?: string | null;
   ctc_amount?: number | null;
   ctc_multiplier?: ApplicationCtcMultiplier | null;
   ctc_currency?: string | null;
   contact_name?: string | null;
   contact_phone?: string | null;
-  applied_at?: string;
+  applied_at?: string | null;
 }
 
 export interface ApplicationActionResponse {

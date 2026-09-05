@@ -1030,6 +1030,7 @@
       "compensation": "CTC / annum",
       "contact": "Contact person",
       "saveNotes": "Save notes",
+      "saveChanges": "Save changes",
       "resumeUnavailable": "The applied resume is no longer available.",
       "loadFailed": "Could not load this application.",
       "editResume": "Edit resume"
@@ -1055,6 +1056,7 @@
       "currency": "Currency",
       "contactName": "Contact name",
       "contactPhone": "Contact phone",
+      "applicationDate": "Application date",
       "optional": "Optional",
       "status": "Status",
       "submit": "Add",

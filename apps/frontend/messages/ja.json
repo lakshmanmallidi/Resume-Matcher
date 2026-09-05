@@ -1030,6 +1030,7 @@
       "compensation": "年間 CTC",
       "contact": "担当者",
       "saveNotes": "メモを保存",
+      "saveChanges": "変更を保存",
       "resumeUnavailable": "応募した履歴書は利用できなくなりました。",
       "loadFailed": "この応募を読み込めませんでした。",
       "editResume": "履歴書を編集"
@@ -1055,6 +1056,7 @@
       "currency": "通貨",
       "contactName": "担当者名",
       "contactPhone": "担当者の電話番号",
+      "applicationDate": "応募日",
       "optional": "任意",
       "status": "ステータス",
       "submit": "追加",

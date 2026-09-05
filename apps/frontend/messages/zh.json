@@ -1030,6 +1030,7 @@
       "compensation": "年度 CTC",
       "contact": "联系人",
       "saveNotes": "保存备注",
+      "saveChanges": "保存更改",
       "resumeUnavailable": "所投递的简历已不可用。",
       "loadFailed": "无法加载此申请。",
       "editResume": "编辑简历"
@@ -1055,6 +1056,7 @@
       "currency": "货币",
       "contactName": "联系人姓名",
       "contactPhone": "联系人电话",
+      "applicationDate": "申请日期",
       "optional": "可选",
       "status": "状态",
       "submit": "添加",

@@ -111,6 +111,7 @@ class ManualApplicationCreate(BaseModel):
     ctc_currency: str | None = None
     contact_name: str | None = None
     contact_phone: str | None = None
+    applied_at: str | None = None
     status: str = ApplicationStatus.applied.value
     notes: str | None = None
 
