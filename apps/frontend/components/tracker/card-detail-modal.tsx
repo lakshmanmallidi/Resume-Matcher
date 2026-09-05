@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
 import Pencil from 'lucide-react/dist/esm/icons/pencil';
+import Plus from 'lucide-react/dist/esm/icons/plus';
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +28,7 @@ import {
   type ApplicationCtcMultiplier,
   type ApplicationStatus,
   type ApplicationDetail,
+  type InterviewRound,
   type TrackerColumn,
 } from '@/lib/api/tracker';
 
@@ -55,9 +58,11 @@ export function CardDetailModal({
   const [ctcCurrency, setCtcCurrency] = useState('INR');
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [applicationDate, setApplicationDate] = useState('');
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [notes, setNotes] = useState('');
+  const [interviewRounds, setInterviewRounds] = useState<InterviewRound[]>([]);
   const [saving, setSaving] = useState(false);
   const [notesError, setNotesError] = useState<string | null>(null);
 
@@ -79,9 +84,11 @@ export function CardDetailModal({
         setCtcCurrency(data.ctc_currency || 'INR');
         setContactName(data.contact_name ?? '');
         setContactPhone(data.contact_phone ?? '');
+        setContactEmail(data.contact_email ?? '');
         setApplicationDate(data.applied_at ? data.applied_at.slice(0, 10) : '');
         setStatus(data.status);
         setNotes(data.notes ?? '');
+        setInterviewRounds(data.interview_rounds ?? []);
         setNotesError(null);
       })
       .catch(() => {
@@ -113,6 +120,12 @@ export function CardDetailModal({
         ctc_currency: ctcAmount === '' ? null : ctcCurrency,
         contact_name: contactName.trim() || null,
         contact_phone: contactPhone.trim() || null,
+        contact_email: contactEmail.trim() || null,
+        interview_rounds: interviewRounds.map((round) => ({
+          ...round,
+          round_name: round.round_name.trim(),
+          probability: round.probability === null ? null : Number(round.probability),
+        })),
         applied_at: applicationDate || null,
         status,
         notes,
@@ -128,11 +141,18 @@ export function CardDetailModal({
     }
   };
 
+  const addInterviewRound = () => {
+    setInterviewRounds((current) => [
+      ...current,
+      { round_name: `Round ${current.length + 1}`, scheduled_at: null, probability: null },
+    ]);
+  };
+
   const resumeAvailable = Boolean(detail?.resume);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-h-[calc(100vh-2rem)] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{detail?.company || t('tracker.card.companyUnknown')}</DialogTitle>
           <DialogDescription>{detail?.role || t('tracker.card.roleUnknown')}</DialogDescription>
@@ -144,7 +164,7 @@ export function CardDetailModal({
           </div>
         ) : detail ? (
           <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor="card-company">{t('tracker.manualAdd.company')}</Label>
                 <Input
@@ -203,6 +223,15 @@ export function CardDetailModal({
                   onChange={(e) => setContactPhone(e.target.value)}
                 />
               </div>
+              <div className="space-y-1">
+                <Label htmlFor="card-contact-email">{t('tracker.manualAdd.contactEmail')}</Label>
+                <Input
+                  id="card-contact-email"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                />
+              </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -226,6 +255,79 @@ export function CardDetailModal({
                 value={status}
                 onChange={(value) => setStatus(value as ApplicationStatus)}
               />
+            </div>
+
+            <div className="space-y-2 border-t border-black pt-3">
+              <div className="flex items-center justify-between gap-3">
+                <Label>{t('tracker.modal.interviewRounds')}</Label>
+                <Button type="button" size="sm" variant="outline" onClick={addInterviewRound}>
+                  <Plus className="h-4 w-4" />
+                  {t('tracker.modal.addInterviewRound')}
+                </Button>
+              </div>
+              {interviewRounds.map((round, index) => (
+                <div key={index} className="grid gap-2 sm:grid-cols-[1.2fr_1fr_0.7fr_auto]">
+                  <Input
+                    aria-label={t('tracker.modal.roundName')}
+                    value={round.round_name}
+                    onChange={(e) =>
+                      setInterviewRounds((current) =>
+                        current.map((item, itemIndex) =>
+                          itemIndex === index ? { ...item, round_name: e.target.value } : item
+                        )
+                      )
+                    }
+                    placeholder={t('tracker.modal.roundName')}
+                  />
+                  <Input
+                    aria-label={t('tracker.modal.scheduledAt')}
+                    type="datetime-local"
+                    value={round.scheduled_at ?? ''}
+                    onChange={(e) =>
+                      setInterviewRounds((current) =>
+                        current.map((item, itemIndex) =>
+                          itemIndex === index
+                            ? { ...item, scheduled_at: e.target.value || null }
+                            : item
+                        )
+                      )
+                    }
+                  />
+                  <Input
+                    aria-label={t('tracker.modal.probability')}
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={round.probability ?? ''}
+                    onChange={(e) =>
+                      setInterviewRounds((current) =>
+                        current.map((item, itemIndex) =>
+                          itemIndex === index
+                            ? {
+                                ...item,
+                                probability: e.target.value === '' ? null : Number(e.target.value),
+                              }
+                            : item
+                        )
+                      )
+                    }
+                    placeholder="0-100"
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    aria-label={t('tracker.modal.removeInterviewRound')}
+                    onClick={() =>
+                      setInterviewRounds((current) =>
+                        current.filter((_, itemIndex) => itemIndex !== index)
+                      )
+                    }
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
             </div>
 
             <div className="space-y-1">

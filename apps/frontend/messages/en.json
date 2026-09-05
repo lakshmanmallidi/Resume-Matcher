@@ -1016,6 +1016,9 @@
       "description": "Tailor a resume to a job, or add one manually, to start tracking."
     },
     "card": {
+      "interviewProgress": "Interview round progress",
+      "interviewPending": "Not completed",
+      "interviewAverage": "Avg {value}%",
       "companyUnknown": "Unknown company",
       "roleUnknown": "Untitled role",
       "sharedResume": "Shared resume",
@@ -1023,6 +1026,12 @@
       "dragAria": "Drag to reorder"
     },
     "modal": {
+      "interviewRounds": "Interview rounds",
+      "addInterviewRound": "Add round",
+      "roundName": "Round name",
+      "scheduledAt": "Scheduled date and time",
+      "probability": "Interview score (%)",
+      "removeInterviewRound": "Remove interview round",
       "jobDescription": "Job Description",
       "noJobDescription": "No job description on file.",
       "notes": "Notes",
@@ -1056,6 +1065,7 @@
       "currency": "Currency",
       "contactName": "Contact name",
       "contactPhone": "Contact phone",
+      "contactEmail": "Contact email",
       "applicationDate": "Application date",
       "optional": "Optional",
       "status": "Status",

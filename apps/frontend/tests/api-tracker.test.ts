@@ -64,6 +64,7 @@ describe('tracker API client', () => {
       position: 0,
       applied_at: '2026-09-05',
       contact_name: null,
+      contact_email: 'sam@example.com',
     });
     const { url, options } = lastCall();
     expect(url).toContain('/applications/x');
@@ -73,6 +74,7 @@ describe('tracker API client', () => {
       position: 0,
       applied_at: '2026-09-05',
       contact_name: null,
+      contact_email: 'sam@example.com',
     });
   });
 

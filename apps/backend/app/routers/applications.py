@@ -168,6 +168,7 @@ async def create_application(request: ManualApplicationCreate) -> ApplicationRes
             ctc_currency=request.ctc_currency,
             contact_name=request.contact_name,
             contact_phone=request.contact_phone,
+            contact_email=request.contact_email,
             applied_at=request.applied_at,
             notes=request.notes,
         )

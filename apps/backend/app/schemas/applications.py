@@ -22,6 +22,14 @@ class ApplicationStatus(str, Enum):
 APPLICATION_STATUS_ORDER: list[str] = [s.value for s in ApplicationStatus]
 
 
+class InterviewRound(BaseModel):
+    """A scheduled interview round and the user's self-assessed result."""
+
+    round_name: str = Field(min_length=1, max_length=120)
+    scheduled_at: str | None = None
+    probability: int | None = Field(default=None, ge=0, le=100)
+
+
 class TrackerColumnResponse(BaseModel):
     """A configured tracker column."""
 
@@ -69,6 +77,8 @@ class ApplicationResponse(BaseModel):
     ctc_currency: str | None = None
     contact_name: str | None = None
     contact_phone: str | None = None
+    contact_email: str | None = None
+    interview_rounds: list[InterviewRound] = Field(default_factory=list)
     applied_at: str | None = None
     notes: str | None = None
     position: int
@@ -111,6 +121,7 @@ class ManualApplicationCreate(BaseModel):
     ctc_currency: str | None = None
     contact_name: str | None = None
     contact_phone: str | None = None
+    contact_email: str | None = None
     applied_at: str | None = None
     status: str = ApplicationStatus.applied.value
     notes: str | None = None
@@ -129,6 +140,8 @@ class ApplicationUpdate(BaseModel):
     ctc_currency: str | None = None
     contact_name: str | None = None
     contact_phone: str | None = None
+    contact_email: str | None = None
+    interview_rounds: list[InterviewRound] | None = None
     applied_at: str | None = None
 
 

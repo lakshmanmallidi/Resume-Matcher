@@ -231,6 +231,7 @@ class TestUpdateAndMove:
                     "ctc_currency": "INR",
                     "contact_name": "Sam",
                     "contact_phone": "+1 555 0100",
+                    "contact_email": "sam@example.com",
                     "applied_at": "2025-12-31",
                     "notes": "Follow up next week",
                 },
@@ -241,8 +242,40 @@ class TestUpdateAndMove:
         assert body["role"] == "Principal Engineer"
         assert body["ctc_amount"] == 42
         assert body["contact_name"] == "Sam"
+        assert body["contact_email"] == "sam@example.com"
         assert body["applied_at"] == "2025-12-31"
         assert body["notes"] == "Follow up next week"
+
+    async def test_patch_interview_rounds(self, isolated_db):
+        card = await _seed_card(isolated_db)
+        rounds = [
+            {
+                "round_name": "Technical screen",
+                "scheduled_at": "2026-09-01T10:30",
+                "probability": 78,
+            },
+            {"round_name": "Hiring manager", "scheduled_at": None, "probability": None},
+        ]
+        async with _client() as client:
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"interview_rounds": rounds},
+            )
+        assert resp.status_code == 200
+        assert resp.json()["interview_rounds"] == rounds
+
+    async def test_patch_interview_round_rejects_probability_outside_range(self, isolated_db):
+        card = await _seed_card(isolated_db)
+        async with _client() as client:
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={
+                    "interview_rounds": [
+                        {"round_name": "Technical", "probability": 101},
+                    ]
+                },
+            )
+        assert resp.status_code == 422
 
     async def test_patch_unknown_returns_404(self, isolated_db):
         async with _client() as client:

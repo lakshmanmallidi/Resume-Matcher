@@ -57,6 +57,7 @@ export function ManualAddApplicationDialog({
   const [ctcCurrency, setCtcCurrency] = useState('INR');
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [applicationDate, setApplicationDate] = useState(getToday());
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [submitting, setSubmitting] = useState(false);
@@ -89,6 +90,7 @@ export function ManualAddApplicationDialog({
     setCtcCurrency('INR');
     setContactName('');
     setContactPhone('');
+    setContactEmail('');
     setApplicationDate(getToday());
     setStatus('applied');
     setError(null);
@@ -112,6 +114,7 @@ export function ManualAddApplicationDialog({
         ctc_currency: ctcAmount === '' ? undefined : ctcCurrency,
         contact_name: contactName.trim() || undefined,
         contact_phone: contactPhone.trim() || undefined,
+        contact_email: contactEmail.trim() || undefined,
         applied_at: applicationDate || undefined,
         status,
       });
@@ -182,7 +185,7 @@ export function ManualAddApplicationDialog({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label htmlFor="manual-company">{t('tracker.manualAdd.company')}</Label>
               <Input
@@ -220,6 +223,16 @@ export function ManualAddApplicationDialog({
                 type="tel"
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
+                placeholder={t('tracker.manualAdd.optional')}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="manual-contact-email">{t('tracker.manualAdd.contactEmail')}</Label>
+              <Input
+                id="manual-contact-email"
+                type="email"
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
                 placeholder={t('tracker.manualAdd.optional')}
               />
             </div>

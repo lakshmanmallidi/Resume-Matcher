@@ -9,6 +9,19 @@ import { Card } from '@/components/ui/card';
 import { useTranslations } from '@/lib/i18n';
 import type { Application } from '@/lib/api/tracker';
 
+const probabilityColor = (probability: number): string => {
+  if (probability <= 15) return '#EF4444';
+  if (probability <= 30) return '#EA580C';
+  if (probability <= 45) return '#F97316';
+  if (probability <= 60) return '#CA8A04';
+  if (probability <= 75) return '#EAB308';
+  if (probability <= 90) return '#84CC16';
+  return '#22C55E';
+};
+
+const isCompleted = (scheduledAt: string | null): boolean =>
+  Boolean(scheduledAt && new Date(scheduledAt).getTime() < Date.now());
+
 interface ApplicationCardProps {
   application: Application;
   selected: boolean;
@@ -37,6 +50,15 @@ export function ApplicationCard({
 
   const company = application.company?.trim();
   const role = application.role?.trim();
+  const probabilities = application.interview_rounds
+    .map((round) => round.probability)
+    .filter((probability): probability is number => probability !== null);
+  const averageProbability =
+    probabilities.length > 0
+      ? Math.round(
+          probabilities.reduce((sum, probability) => sum + probability, 0) / probabilities.length
+        )
+      : null;
 
   return (
     <div ref={setNodeRef} style={style}>
@@ -74,6 +96,37 @@ export function ApplicationCard({
             <p className="truncate font-mono text-xs text-ink-soft">
               {role || t('tracker.card.roleUnknown')}
             </p>
+            {application.interview_rounds.length > 0 && (
+              <div
+                className="mt-2 flex items-center gap-2"
+                aria-label={t('tracker.card.interviewProgress')}
+              >
+                <div className="flex min-w-0 flex-1 gap-1">
+                  {application.interview_rounds.map((round, index) => {
+                    const filled = isCompleted(round.scheduled_at) && round.probability !== null;
+                    return (
+                      <span
+                        key={`${round.round_name}-${index}`}
+                        className="h-1.5 min-w-4 flex-1 border border-black/10"
+                        style={{
+                          backgroundColor: filled
+                            ? probabilityColor(round.probability!)
+                            : '#D1D5DB',
+                        }}
+                        title={`${round.round_name}: ${
+                          filled ? `${round.probability}%` : t('tracker.card.interviewPending')
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
+                {averageProbability !== null && (
+                  <span className="shrink-0 font-mono text-[10px] text-steel-grey">
+                    {t('tracker.card.interviewAverage', { value: averageProbability })}
+                  </span>
+                )}
+              </div>
+            )}
             {application.applied_at && (
               <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-steel-grey">
                 {new Date(application.applied_at).toLocaleDateString()}

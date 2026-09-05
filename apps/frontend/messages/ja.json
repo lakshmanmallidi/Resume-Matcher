@@ -1016,6 +1016,9 @@
       "description": "求人に合わせて履歴書を調整するか、手動で追加して追跡を開始しましょう。"
     },
     "card": {
+      "interviewProgress": "面接ラウンドの進捗",
+      "interviewPending": "未完了",
+      "interviewAverage": "平均 {value}%",
       "companyUnknown": "会社名不明",
       "roleUnknown": "役職名なし",
       "sharedResume": "共有された履歴書",
@@ -1023,6 +1026,12 @@
       "dragAria": "ドラッグして並べ替え"
     },
     "modal": {
+      "interviewRounds": "面接ラウンド",
+      "addInterviewRound": "ラウンドを追加",
+      "roundName": "ラウンド名",
+      "scheduledAt": "予定日時",
+      "probability": "面接スコア（%）",
+      "removeInterviewRound": "面接ラウンドを削除",
       "jobDescription": "求人内容",
       "noJobDescription": "求人内容はありません。",
       "notes": "メモ",
@@ -1056,6 +1065,7 @@
       "currency": "通貨",
       "contactName": "担当者名",
       "contactPhone": "担当者の電話番号",
+      "contactEmail": "担当者のメールアドレス",
       "applicationDate": "応募日",
       "optional": "任意",
       "status": "ステータス",

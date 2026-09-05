@@ -1016,6 +1016,9 @@
       "description": "Personalize um currículo para uma vaga ou adicione manualmente para começar."
     },
     "card": {
+      "interviewProgress": "Progresso das rodadas de entrevista",
+      "interviewPending": "Não concluída",
+      "interviewAverage": "Méd. {value}%",
       "companyUnknown": "Empresa desconhecida",
       "roleUnknown": "Cargo sem título",
       "sharedResume": "Currículo compartilhado",
@@ -1023,6 +1026,12 @@
       "dragAria": "Arraste para reordenar"
     },
     "modal": {
+      "interviewRounds": "Rodadas de entrevista",
+      "addInterviewRound": "Adicionar rodada",
+      "roundName": "Nome da rodada",
+      "scheduledAt": "Data e hora agendadas",
+      "probability": "Pontuação da entrevista (%)",
+      "removeInterviewRound": "Remover rodada de entrevista",
       "jobDescription": "Descrição da vaga",
       "noJobDescription": "Nenhuma descrição de vaga registrada.",
       "notes": "Notas",
@@ -1056,6 +1065,7 @@
       "currency": "Moeda",
       "contactName": "Nome do contato",
       "contactPhone": "Telefone do contato",
+      "contactEmail": "E-mail do contato",
       "applicationDate": "Data da candidatura",
       "optional": "Opcional",
       "status": "Status",

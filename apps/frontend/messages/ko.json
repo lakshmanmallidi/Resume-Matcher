@@ -1016,6 +1016,9 @@
       "description": "채용 공고에 이력서를 맞춤화하거나 수동으로 추가하여 추적을 시작하세요."
     },
     "card": {
+      "interviewProgress": "면접 라운드 진행률",
+      "interviewPending": "미완료",
+      "interviewAverage": "평균 {value}%",
       "companyUnknown": "회사명 미상",
       "roleUnknown": "직무명 없음",
       "sharedResume": "공유된 이력서",
@@ -1023,6 +1026,12 @@
       "dragAria": "드래그하여 순서 변경"
     },
     "modal": {
+      "interviewRounds": "면접 라운드",
+      "addInterviewRound": "라운드 추가",
+      "roundName": "라운드 이름",
+      "scheduledAt": "예정 날짜 및 시간",
+      "probability": "면접 점수 (%)",
+      "removeInterviewRound": "면접 라운드 삭제",
       "jobDescription": "채용 공고",
       "noJobDescription": "등록된 채용 공고가 없습니다.",
       "notes": "메모",
@@ -1056,6 +1065,7 @@
       "currency": "통화",
       "contactName": "담당자 이름",
       "contactPhone": "담당자 전화번호",
+      "contactEmail": "담당자 이메일",
       "applicationDate": "지원 날짜",
       "optional": "선택 사항",
       "status": "상태",

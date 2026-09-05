@@ -1016,6 +1016,9 @@
       "description": "Personnalisez un CV pour un poste, ou ajoutez-en un manuellement, pour commencer le suivi."
     },
     "card": {
+      "interviewProgress": "Progression des entretiens",
+      "interviewPending": "Non terminée",
+      "interviewAverage": "Moy. {value}%",
       "companyUnknown": "Entreprise inconnue",
       "roleUnknown": "Poste sans titre",
       "sharedResume": "CV partagé",
@@ -1023,6 +1026,12 @@
       "dragAria": "Faire glisser pour réorganiser"
     },
     "modal": {
+      "interviewRounds": "Tours d'entretien",
+      "addInterviewRound": "Ajouter un tour",
+      "roundName": "Nom du tour",
+      "scheduledAt": "Date et heure prévues",
+      "probability": "Score de l'entretien (%)",
+      "removeInterviewRound": "Supprimer le tour",
       "jobDescription": "Fiche de poste",
       "noJobDescription": "Aucune fiche de poste enregistrée.",
       "notes": "Notes",
@@ -1056,6 +1065,7 @@
       "currency": "Devise",
       "contactName": "Nom du contact",
       "contactPhone": "Téléphone du contact",
+      "contactEmail": "E-mail du contact",
       "applicationDate": "Date de candidature",
       "optional": "Optionnel",
       "status": "Statut",

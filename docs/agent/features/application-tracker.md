@@ -44,10 +44,14 @@ destination column; its cards are moved there before deletion.
 `job_id`, `resume_id` (the applied/tailored resume), `master_resume_id`
 (optional base — powers the "shared resume" badge), `status` (7-key enum),
 `company`, `role`, optional `ctc_amount`, `ctc_multiplier`, and `ctc_currency`,
-optional `contact_name` and `contact_phone`, `applied_at`, `notes`, `position`
+optional `contact_name`, `contact_phone`, and `contact_email`, `interview_rounds` (JSON array of
+`{round_name, scheduled_at, probability}`), `applied_at`, `notes`, `position`
 (per-column order, server-renumbered on PATCH), `created_at`, `updated_at`.
-The detail modal shows compensation and contact details; contact details are
-not shown on the board card. `create_application` dedupes on `(job_id,
+`probability` is an optional integer from 0 to 100. A round is completed when
+its scheduled time is in the past; cards render one progress line per round
+and color completed lines by probability. The detail modal shows compensation
+and contact details; contact details are not shown on the board card.
+`create_application` dedupes on `(job_id,
 resume_id)` to survive double-submit.
 
 ## API (`prefix=/applications`, mounted under `/api/v1`)
@@ -57,7 +61,7 @@ resume_id)` to survive double-submit.
 | GET | `/applications` | All cards grouped by column (all 7 keys present) |
 | POST | `/applications` | Manual add (creates job + card; best-effort extraction) |
 | GET | `/applications/{id}` | Card + embedded JD + resume (resume null if deleted) |
-| PATCH | `/applications/{id}` | Update status/position/notes/company/role/CTC/applied_at |
+| PATCH | `/applications/{id}` | Update status/position/notes/company/role/CTC/contact/interview rounds/applied_at |
 | PATCH | `/applications/bulk` | Move many cards to one column |
 | DELETE | `/applications/{id}` | Delete one card |
 | POST | `/applications/bulk-delete` | Delete many cards |

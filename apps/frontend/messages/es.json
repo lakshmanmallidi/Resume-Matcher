@@ -1016,6 +1016,9 @@
       "description": "Adapta un currículum a un empleo o añade uno manualmente para empezar."
     },
     "card": {
+      "interviewProgress": "Progreso de rondas de entrevista",
+      "interviewPending": "No completada",
+      "interviewAverage": "Prom. {value}%",
       "companyUnknown": "Empresa desconocida",
       "roleUnknown": "Puesto sin título",
       "sharedResume": "Currículum compartido",
@@ -1023,6 +1026,12 @@
       "dragAria": "Arrastra para reordenar"
     },
     "modal": {
+      "interviewRounds": "Rondas de entrevista",
+      "addInterviewRound": "Añadir ronda",
+      "roundName": "Nombre de la ronda",
+      "scheduledAt": "Fecha y hora programadas",
+      "probability": "Puntuación de entrevista (%)",
+      "removeInterviewRound": "Eliminar ronda de entrevista",
       "jobDescription": "Descripción del empleo",
       "noJobDescription": "No hay descripción del empleo.",
       "notes": "Notas",
@@ -1056,6 +1065,7 @@
       "currency": "Moneda",
       "contactName": "Nombre de contacto",
       "contactPhone": "Teléfono de contacto",
+      "contactEmail": "Correo electrónico de contacto",
       "applicationDate": "Fecha de solicitud",
       "optional": "Opcional",
       "status": "Estado",

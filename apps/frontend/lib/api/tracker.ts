@@ -16,6 +16,12 @@ export const APPLICATION_STATUS_ORDER: ApplicationStatus[] = [
 export const APPLICATION_CTC_MULTIPLIERS = ['K', 'L', 'M', 'Cr', 'B'] as const;
 export type ApplicationCtcMultiplier = (typeof APPLICATION_CTC_MULTIPLIERS)[number];
 
+export interface InterviewRound {
+  round_name: string;
+  scheduled_at: string | null;
+  probability: number | null;
+}
+
 const FALLBACK_CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'JPY', 'AUD', 'CAD'];
 export const APPLICATION_CURRENCIES = (
   typeof Intl.supportedValuesOf === 'function'
@@ -36,6 +42,8 @@ export interface Application {
   ctc_currency: string | null;
   contact_name: string | null;
   contact_phone: string | null;
+  contact_email: string | null;
+  interview_rounds: InterviewRound[];
   applied_at: string | null;
   notes: string | null;
   position: number;
@@ -82,6 +90,7 @@ export interface ManualApplicationCreate {
   ctc_currency?: string;
   contact_name?: string;
   contact_phone?: string;
+  contact_email?: string;
   applied_at?: string;
   status?: ApplicationStatus;
   notes?: string;
@@ -98,6 +107,8 @@ export interface ApplicationUpdate {
   ctc_currency?: string | null;
   contact_name?: string | null;
   contact_phone?: string | null;
+  contact_email?: string | null;
+  interview_rounds?: InterviewRound[];
   applied_at?: string | null;
 }
 

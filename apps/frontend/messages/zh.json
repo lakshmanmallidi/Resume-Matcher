@@ -1016,6 +1016,9 @@
       "description": "为某个职位定制简历，或手动添加一项，即可开始追踪。"
     },
     "card": {
+      "interviewProgress": "面试轮次进度",
+      "interviewPending": "未完成",
+      "interviewAverage": "平均 {value}%",
       "companyUnknown": "未知公司",
       "roleUnknown": "未命名职位",
       "sharedResume": "共享简历",
@@ -1023,6 +1026,12 @@
       "dragAria": "拖动以重新排序"
     },
     "modal": {
+      "interviewRounds": "面试轮次",
+      "addInterviewRound": "添加轮次",
+      "roundName": "轮次名称",
+      "scheduledAt": "计划日期和时间",
+      "probability": "面试评分（%）",
+      "removeInterviewRound": "删除面试轮次",
       "jobDescription": "职位描述",
       "noJobDescription": "没有职位描述。",
       "notes": "备注",
@@ -1056,6 +1065,7 @@
       "currency": "货币",
       "contactName": "联系人姓名",
       "contactPhone": "联系人电话",
+      "contactEmail": "联系人邮箱",
       "applicationDate": "申请日期",
       "optional": "可选",
       "status": "状态",
