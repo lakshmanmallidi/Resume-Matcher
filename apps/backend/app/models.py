@@ -123,6 +123,7 @@ class Application(Base):
     contact_phone: Mapped[str | None] = mapped_column(String, nullable=True)
     contact_email: Mapped[str | None] = mapped_column(String, nullable=True)
     interview_rounds: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
+    stage_dates: Mapped[dict[str, str]] = mapped_column(JSON, default=dict)
     applied_at: Mapped[str | None] = mapped_column(String, nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     position: Mapped[int] = mapped_column(Integer, default=0)

@@ -127,11 +127,6 @@ export function ApplicationCard({
                 )}
               </div>
             )}
-            {application.applied_at && (
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-steel-grey">
-                {new Date(application.applied_at).toLocaleDateString()}
-              </p>
-            )}
             {sharedResume && (
               <span className="mt-1 inline-flex items-center gap-1 border border-black bg-paper-tint px-1 font-mono text-[10px] uppercase text-ink-soft">
                 <Layers className="h-3 w-3" />

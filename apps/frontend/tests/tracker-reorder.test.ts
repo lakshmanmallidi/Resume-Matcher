@@ -23,6 +23,7 @@ function card(id: string, status: ApplicationStatus, position: number): Applicat
     contact_phone: null,
     contact_email: null,
     interview_rounds: [],
+    stage_dates: {},
     applied_at: null,
     notes: null,
     position,

@@ -1030,7 +1030,7 @@
       "addInterviewRound": "Ajouter un tour",
       "roundName": "Nom du tour",
       "scheduledAt": "Date et heure prévues",
-      "probability": "Score de l'entretien (%)",
+      "probability": "Score de performance%",
       "removeInterviewRound": "Supprimer le tour",
       "jobDescription": "Fiche de poste",
       "noJobDescription": "Aucune fiche de poste enregistrée.",
@@ -1066,12 +1066,22 @@
       "contactName": "Nom du contact",
       "contactPhone": "Téléphone du contact",
       "contactEmail": "E-mail du contact",
-      "applicationDate": "Date de candidature",
+      "date": "Date",
       "optional": "Optionnel",
       "status": "Statut",
       "submit": "Ajouter",
       "validation": "Choisissez un CV et collez une fiche de poste.",
       "failed": "Impossible de créer la candidature."
+    },
+    "stageDate": {
+      "title": "Quand cette étape a-t-elle commencé ?",
+      "description": "Choisissez la date du passage à {stage}.",
+      "date": "Date de l'étape",
+      "confirm": "Enregistrer la date"
+    },
+    "timeline": {
+      "title": "Chronologie de la candidature",
+      "days": "{value} j"
     },
     "errors": {
       "loadFailed": "Impossible de charger les candidatures.",

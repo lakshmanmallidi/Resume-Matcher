@@ -204,6 +204,10 @@ class Database:
 
     @staticmethod
     def _application_to_dict(row: Application) -> dict[str, Any]:
+        stored_stage_dates = dict(row.stage_dates or {})
+        stage_dates = stored_stage_dates.copy()
+        if not stored_stage_dates and row.applied_at:
+            stage_dates["applied"] = row.applied_at
         return {
             "application_id": row.application_id,
             "job_id": row.job_id,
@@ -219,6 +223,7 @@ class Database:
             "contact_phone": row.contact_phone,
             "contact_email": row.contact_email,
             "interview_rounds": row.interview_rounds or [],
+            "stage_dates": stage_dates,
             "applied_at": row.applied_at,
             "notes": row.notes,
             "position": row.position,
@@ -557,6 +562,7 @@ class Database:
         contact_phone: str | None = None,
         contact_email: str | None = None,
         interview_rounds: list[dict[str, Any]] | None = None,
+        stage_dates: dict[str, str] | None = None,
         applied_at: str | None = None,
         notes: str | None = None,
     ) -> dict[str, Any]:
@@ -576,8 +582,13 @@ class Database:
                 return self._application_to_dict(found)
 
             now = _now()
-            if applied_at is None and status != "saved":
+            normalized_stage_dates = dict(stage_dates or {})
+            if applied_at is None:
+                applied_at = normalized_stage_dates.get("applied")
+            if applied_at is None and status == "applied":
                 applied_at = now
+            if applied_at is not None:
+                normalized_stage_dates["applied"] = applied_at
             position = await self._next_position(session, status)
             row = Application(
                 application_id=str(uuid4()),
@@ -594,6 +605,7 @@ class Database:
                 contact_phone=contact_phone,
                 contact_email=contact_email,
                 interview_rounds=interview_rounds or [],
+                stage_dates=normalized_stage_dates or {status: applied_at or now},
                 applied_at=applied_at,
                 notes=notes,
                 position=position,
@@ -771,14 +783,50 @@ class Database:
                 "contact_phone",
                 "contact_email",
                 "interview_rounds",
-                "applied_at",
                 "notes",
             ):
                 if key in updates:
                     setattr(row, key, updates[key])
 
+            stage_dates = dict(row.stage_dates or {})
+            if "stage_dates" in updates:
+                stage_dates = dict(updates["stage_dates"] or {})
+            if "applied_at" in updates:
+                row.applied_at = updates["applied_at"]
+                if row.applied_at is None:
+                    stage_dates.pop("applied", None)
+                else:
+                    stage_dates["applied"] = row.applied_at
+            elif "applied" in stage_dates:
+                row.applied_at = stage_dates["applied"]
+            row.stage_dates = stage_dates
+
             moved = "status" in updates or "position" in updates
             if moved:
+                if old_status != new_status:
+                    stage_dates = dict(row.stage_dates or {})
+                    stage_date = (
+                        updates.get("stage_date")
+                        or (updates.get("applied_at") if new_status == "applied" else None)
+                        or _now()
+                    )
+                    old_index = (
+                        APPLICATION_STATUSES.index(old_status)
+                        if old_status in APPLICATION_STATUSES
+                        else -1
+                    )
+                    new_index = (
+                        APPLICATION_STATUSES.index(new_status)
+                        if new_status in APPLICATION_STATUSES
+                        else -1
+                    )
+                    if new_index >= 0 and old_index >= 0 and new_index < old_index:
+                        for status in APPLICATION_STATUSES[new_index + 1 :]:
+                            stage_dates.pop(status, None)
+                    stage_dates[new_status] = stage_date
+                    row.stage_dates = stage_dates
+                    if new_status == "applied":
+                        row.applied_at = stage_date
                 row.status = new_status
                 # Park it out of the way, renumber both columns, then reinsert.
                 row.position = 10_000_000
@@ -808,7 +856,7 @@ class Database:
             return self._application_to_dict(row)
 
     async def bulk_update_applications(
-        self, application_ids: list[str], status: str
+        self, application_ids: list[str], status: str, stage_date: str | None = None
     ) -> int:
         """Move many applications to the end of ``status``. Returns count moved."""
         moved = 0
@@ -819,6 +867,19 @@ class Database:
                 if row is None:
                     continue
                 affected_old.add(row.status)
+                if row.status != status:
+                    stage_dates = dict(row.stage_dates or {})
+                    old_index = (
+                        APPLICATION_STATUSES.index(row.status)
+                        if row.status in APPLICATION_STATUSES
+                        else -1
+                    )
+                    new_index = APPLICATION_STATUSES.index(status) if status in APPLICATION_STATUSES else -1
+                    if new_index >= 0 and old_index >= 0 and new_index < old_index:
+                        for forward_status in APPLICATION_STATUSES[new_index + 1 :]:
+                            stage_dates.pop(forward_status, None)
+                    stage_dates[status] = stage_date or _now()
+                    row.stage_dates = stage_dates
                 row.status = status
                 row.position = 20_000_000 + moved  # provisional, renumbered below
                 row.updated_at = _now()

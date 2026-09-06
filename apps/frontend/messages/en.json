@@ -1030,7 +1030,7 @@
       "addInterviewRound": "Add round",
       "roundName": "Round name",
       "scheduledAt": "Scheduled date and time",
-      "probability": "Interview score (%)",
+      "probability": "Performance score%",
       "removeInterviewRound": "Remove interview round",
       "jobDescription": "Job Description",
       "noJobDescription": "No job description on file.",
@@ -1066,12 +1066,22 @@
       "contactName": "Contact name",
       "contactPhone": "Contact phone",
       "contactEmail": "Contact email",
-      "applicationDate": "Application date",
+      "date": "Date",
       "optional": "Optional",
       "status": "Status",
       "submit": "Add",
       "validation": "Pick a resume and paste a job description.",
       "failed": "Could not create the application."
+    },
+    "stageDate": {
+      "title": "When did this stage begin?",
+      "description": "Choose the date this application moved to {stage}.",
+      "date": "Stage date",
+      "confirm": "Save date"
+    },
+    "timeline": {
+      "title": "Application timeline",
+      "days": "{value}d"
     },
     "errors": {
       "loadFailed": "Could not load applications.",

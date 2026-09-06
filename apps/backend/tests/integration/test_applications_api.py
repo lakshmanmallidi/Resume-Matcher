@@ -149,18 +149,19 @@ class TestManualAdd:
         assert resp.json()["ctc_multiplier"] == "L"
         assert resp.json()["ctc_currency"] == "INR"
 
-    async def test_manual_add_accepts_custom_application_date(self, isolated_db):
+    async def test_manual_add_accepts_custom_stage_date(self, isolated_db):
         async with _client() as client:
             resp = await client.post(
                 "/api/v1/applications",
                 json={
                     "resume_id": "res-1",
                     "job_description": "JD text",
-                    "applied_at": "2026-01-15",
+                    "stage_date": "2026-01-15",
                 },
             )
         assert resp.status_code == 200
         assert resp.json()["applied_at"] == "2026-01-15"
+        assert resp.json()["stage_dates"]["applied"] == "2026-01-15"
 
 
 class TestDetail:
@@ -276,6 +277,62 @@ class TestUpdateAndMove:
                 },
             )
         assert resp.status_code == 422
+
+    async def test_backward_stage_move_cleans_forward_dates(self, isolated_db):
+        card = await _seed_card(
+            isolated_db,
+            status="rejected",
+            stage_dates={
+                "applied": "2026-09-01",
+                "response": "2026-09-02",
+                "interview": "2026-09-03",
+                "rejected": "2026-09-04",
+            },
+            interview_rounds=[
+                {"round_name": "Technical", "scheduled_at": "2026-09-03T10:00", "probability": 80}
+            ],
+        )
+        async with _client() as client:
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"status": "response", "stage_date": "2026-09-05"},
+            )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["stage_dates"] == {
+            "applied": "2026-09-01",
+            "response": "2026-09-05",
+        }
+        assert len(body["interview_rounds"]) == 1
+
+    async def test_application_date_stays_synced_with_applied_stage_date(self, isolated_db):
+        card = await _seed_card(isolated_db, applied_at="2026-09-01")
+        async with _client() as client:
+            moved = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"status": "rejected", "stage_date": "2026-09-02"},
+            )
+            assert moved.status_code == 200
+            moved_back = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"status": "applied", "stage_date": "2026-09-05"},
+            )
+        assert moved_back.status_code == 200
+        body = moved_back.json()
+        assert body["applied_at"] == "2026-09-05"
+        assert body["stage_dates"]["applied"] == "2026-09-05"
+
+    async def test_moving_applied_back_to_saved_removes_applied_from_timeline(self, isolated_db):
+        card = await _seed_card(isolated_db, applied_at="2026-09-01")
+        async with _client() as client:
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"status": "saved", "stage_date": "2026-09-02"},
+            )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["status"] == "saved"
+        assert body["stage_dates"] == {"saved": "2026-09-02"}
 
     async def test_patch_unknown_returns_404(self, isolated_db):
         async with _client() as client:

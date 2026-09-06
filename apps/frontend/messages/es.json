@@ -1030,7 +1030,7 @@
       "addInterviewRound": "Añadir ronda",
       "roundName": "Nombre de la ronda",
       "scheduledAt": "Fecha y hora programadas",
-      "probability": "Puntuación de entrevista (%)",
+      "probability": "Puntuación de rendimiento%",
       "removeInterviewRound": "Eliminar ronda de entrevista",
       "jobDescription": "Descripción del empleo",
       "noJobDescription": "No hay descripción del empleo.",
@@ -1066,12 +1066,22 @@
       "contactName": "Nombre de contacto",
       "contactPhone": "Teléfono de contacto",
       "contactEmail": "Correo electrónico de contacto",
-      "applicationDate": "Fecha de solicitud",
+      "date": "Fecha",
       "optional": "Opcional",
       "status": "Estado",
       "submit": "Añadir",
       "validation": "Elige un currículum y pega una descripción del empleo.",
       "failed": "No se pudo crear la candidatura."
+    },
+    "stageDate": {
+      "title": "¿Cuándo comenzó esta etapa?",
+      "description": "Elige la fecha en que la candidatura pasó a {stage}.",
+      "date": "Fecha de la etapa",
+      "confirm": "Guardar fecha"
+    },
+    "timeline": {
+      "title": "Cronología de la candidatura",
+      "days": "{value} d"
     },
     "errors": {
       "loadFailed": "No se pudieron cargar las candidaturas.",

@@ -1030,7 +1030,7 @@
       "addInterviewRound": "添加轮次",
       "roundName": "轮次名称",
       "scheduledAt": "计划日期和时间",
-      "probability": "面试评分（%）",
+      "probability": "表现评分%",
       "removeInterviewRound": "删除面试轮次",
       "jobDescription": "职位描述",
       "noJobDescription": "没有职位描述。",
@@ -1066,12 +1066,22 @@
       "contactName": "联系人姓名",
       "contactPhone": "联系人电话",
       "contactEmail": "联系人邮箱",
-      "applicationDate": "申请日期",
+      "date": "日期",
       "optional": "可选",
       "status": "状态",
       "submit": "添加",
       "validation": "请选择一份简历并粘贴职位描述。",
       "failed": "无法创建该申请。"
+    },
+    "stageDate": {
+      "title": "此阶段何时开始？",
+      "description": "选择申请进入{stage}的日期。",
+      "date": "阶段日期",
+      "confirm": "保存日期"
+    },
+    "timeline": {
+      "title": "申请时间线",
+      "days": "{value}天"
     },
     "errors": {
       "loadFailed": "无法加载申请。",

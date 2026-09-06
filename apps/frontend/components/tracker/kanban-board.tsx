@@ -36,6 +36,7 @@ import { CardDetailModal } from './card-detail-modal';
 import { ManualAddApplicationDialog } from './manual-add-application-dialog';
 import { planMove } from './reorder';
 import { ManageColumnsDialog } from './manage-columns-dialog';
+import { StageDateDialog } from './stage-date-dialog';
 
 const SYSTEM_COLUMN_LABELS: Record<string, string> = {
   saved: 'Saved',
@@ -81,6 +82,9 @@ export function KanbanBoard() {
   const [openCardId, setOpenCardId] = useState<string | null>(null);
   const [manualAddOpen, setManualAddOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
+  const [pendingMove, setPendingMove] = useState<ReturnType<typeof planMove>>(null);
+  const [pendingBulkStatus, setPendingBulkStatus] = useState<ApplicationStatus | null>(null);
+  const [stageDateOpen, setStageDateOpen] = useState(false);
   const visibleColumns = columnDefinitions.filter((column) => !column.is_hidden);
 
   // Persist on an actual change only — an effect keyed on the state would also
@@ -167,6 +171,22 @@ export function KanbanBoard() {
       ?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   };
 
+  const persistMove = (date: string) => {
+    if (!pendingMove) return;
+    const move = pendingMove;
+    setPendingMove(null);
+    setStageDateOpen(false);
+    setColumns(move.next);
+    updateApplication(String(move.next[move.status][move.position].application_id), {
+      status: move.status,
+      position: move.position,
+      stage_date: date,
+    }).catch(async () => {
+      await load();
+      setError(t('tracker.errors.moveFailed'));
+    });
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -177,6 +197,13 @@ export function KanbanBoard() {
       columnDefinitions.map((column) => column.column_id)
     );
     if (!plan) return;
+
+    const sourceApplication = allCards.find((card) => card.application_id === String(active.id));
+    if (sourceApplication && sourceApplication.status !== plan.status) {
+      setPendingMove(plan);
+      setStageDateOpen(true);
+      return;
+    }
 
     // Optimistic update. If the server rejects the move we re-load authoritative
     // state from the server rather than reverting to a captured snapshot, which
@@ -207,8 +234,17 @@ export function KanbanBoard() {
   const handleBulkMove = async (status: ApplicationStatus) => {
     const ids = [...selectedIds];
     if (ids.length === 0) return;
+    setPendingBulkStatus(status);
+    setStageDateOpen(true);
+  };
+
+  const persistBulkMove = async (date: string) => {
+    if (!pendingBulkStatus) return;
+    const status = pendingBulkStatus;
+    setPendingBulkStatus(null);
+    setStageDateOpen(false);
     try {
-      await bulkUpdateStatus(ids, status);
+      await bulkUpdateStatus([...selectedIds], status, date);
       clearSelection();
       await load();
     } catch {
@@ -388,6 +424,21 @@ export function KanbanBoard() {
         columns={columnDefinitions}
         onToggle={handleToggleColumn}
         onChanged={load}
+      />
+
+      <StageDateDialog
+        open={stageDateOpen}
+        onOpenChange={(open) => {
+          setStageDateOpen(open);
+          if (!open) {
+            setPendingMove(null);
+            setPendingBulkStatus(null);
+          }
+        }}
+        onConfirm={(date) => {
+          if (pendingMove) persistMove(date);
+          else void persistBulkMove(date);
+        }}
       />
     </div>
   );

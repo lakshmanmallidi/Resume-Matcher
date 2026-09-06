@@ -30,8 +30,9 @@ destination column; its cards are moved there before deletion.
    Company/role come from the cached keyword-extraction pass, so there is **no
    extra LLM call** on this path.
 2. **Manual add:** `POST /applications` creates the job from the pasted JD then
-   the card; when company/role aren't supplied it runs one best-effort
-   extraction call (falls back to blank/editable).
+   the card; the form's date is the selected stage date and is stored in
+   `stage_dates` for the selected status. When company/role aren't supplied it
+   runs one best-effort extraction call (falls back to blank/editable).
 3. **Drag/drop:** cards reorder within a column or move across columns; the
    board updates optimistically and reverts on a failed `PATCH`.
 4. **Detail modal:** shows the JD + the applied resume; **Edit** opens
@@ -45,12 +46,18 @@ destination column; its cards are moved there before deletion.
 (optional base — powers the "shared resume" badge), `status` (7-key enum),
 `company`, `role`, optional `ctc_amount`, `ctc_multiplier`, and `ctc_currency`,
 optional `contact_name`, `contact_phone`, and `contact_email`, `interview_rounds` (JSON array of
-`{round_name, scheduled_at, probability}`), `applied_at`, `notes`, `position`
+`{round_name, scheduled_at, probability}`), `stage_dates` (stage key to date), `applied_at`, `notes`, `position`
 (per-column order, server-renumbered on PATCH), `created_at`, `updated_at`.
 `probability` is an optional integer from 0 to 100. A round is completed when
 its scheduled time is in the past; cards render one progress line per round
-and color completed lines by probability. The detail modal shows compensation
-and contact details; contact details are not shown on the board card.
+and color completed lines by probability. Status moves ask for a date (defaulting
+to today), record it in `stage_dates`, and remove dates for forward stages when
+moving backward. The expanded card shows a horizontal timeline of recorded
+stages and scheduled interview rounds with elapsed days between events. The
+detail modal shows compensation and contact details; contact details are not
+shown on the board card.
+`applied_at` is kept synchronized with `stage_dates.applied` for compatibility
+with the existing application-date card property.
 `create_application` dedupes on `(job_id,
 resume_id)` to survive double-submit.
 
@@ -61,8 +68,8 @@ resume_id)` to survive double-submit.
 | GET | `/applications` | All cards grouped by column (all 7 keys present) |
 | POST | `/applications` | Manual add (creates job + card; best-effort extraction) |
 | GET | `/applications/{id}` | Card + embedded JD + resume (resume null if deleted) |
-| PATCH | `/applications/{id}` | Update status/position/notes/company/role/CTC/contact/interview rounds/applied_at |
-| PATCH | `/applications/bulk` | Move many cards to one column |
+| PATCH | `/applications/{id}` | Update status/position/notes/company/role/CTC/contact/interview rounds/stage date/applied_at |
+| PATCH | `/applications/bulk` | Move many cards to one column with a stage date |
 | DELETE | `/applications/{id}` | Delete one card |
 | POST | `/applications/bulk-delete` | Delete many cards |
 | GET | `/applications/columns` | List configured columns in board order |

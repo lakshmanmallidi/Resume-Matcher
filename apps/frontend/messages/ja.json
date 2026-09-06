@@ -1030,7 +1030,7 @@
       "addInterviewRound": "ラウンドを追加",
       "roundName": "ラウンド名",
       "scheduledAt": "予定日時",
-      "probability": "面接スコア（%）",
+      "probability": "パフォーマンススコア%",
       "removeInterviewRound": "面接ラウンドを削除",
       "jobDescription": "求人内容",
       "noJobDescription": "求人内容はありません。",
@@ -1066,12 +1066,22 @@
       "contactName": "担当者名",
       "contactPhone": "担当者の電話番号",
       "contactEmail": "担当者のメールアドレス",
-      "applicationDate": "応募日",
+      "date": "日付",
       "optional": "任意",
       "status": "ステータス",
       "submit": "追加",
       "validation": "履歴書を選び、求人内容を貼り付けてください。",
       "failed": "応募を作成できませんでした。"
+    },
+    "stageDate": {
+      "title": "このステージはいつ始まりましたか？",
+      "description": "{stage} に移動した日付を選択してください。",
+      "date": "ステージの日付",
+      "confirm": "日付を保存"
+    },
+    "timeline": {
+      "title": "応募のタイムライン",
+      "days": "{value}日"
     },
     "errors": {
       "loadFailed": "応募を読み込めませんでした。",

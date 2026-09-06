@@ -79,6 +79,7 @@ def init_models_sync(engine: Engine) -> None:
             ("contact_phone", "TEXT"),
             ("contact_email", "TEXT"),
             ("interview_rounds", "TEXT"),
+            ("stage_dates", "TEXT"),
         ):
             if application_columns and column_name not in existing_application_columns:
                 conn.exec_driver_sql(

@@ -44,6 +44,7 @@ export interface Application {
   contact_phone: string | null;
   contact_email: string | null;
   interview_rounds: InterviewRound[];
+  stage_dates: Record<string, string>;
   applied_at: string | null;
   notes: string | null;
   position: number;
@@ -91,7 +92,7 @@ export interface ManualApplicationCreate {
   contact_name?: string;
   contact_phone?: string;
   contact_email?: string;
-  applied_at?: string;
+  stage_date?: string;
   status?: ApplicationStatus;
   notes?: string;
 }
@@ -109,6 +110,7 @@ export interface ApplicationUpdate {
   contact_phone?: string | null;
   contact_email?: string | null;
   interview_rounds?: InterviewRound[];
+  stage_date?: string | null;
   applied_at?: string | null;
 }
 
@@ -205,11 +207,13 @@ export async function updateApplication(
 // Move many cards to one column.
 export async function bulkUpdateStatus(
   applicationIds: string[],
-  status: ApplicationStatus
+  status: ApplicationStatus,
+  stageDate?: string
 ): Promise<ApplicationActionResponse> {
   const res = await apiPatch('/applications/bulk', {
     application_ids: applicationIds,
     status,
+    stage_date: stageDate,
   });
   return asJson<ApplicationActionResponse>(res, 'Failed to move applications');
 }

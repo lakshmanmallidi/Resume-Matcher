@@ -79,6 +79,7 @@ class ApplicationResponse(BaseModel):
     contact_phone: str | None = None
     contact_email: str | None = None
     interview_rounds: list[InterviewRound] = Field(default_factory=list)
+    stage_dates: dict[str, str] = Field(default_factory=dict)
     applied_at: str | None = None
     notes: str | None = None
     position: int
@@ -122,7 +123,7 @@ class ManualApplicationCreate(BaseModel):
     contact_name: str | None = None
     contact_phone: str | None = None
     contact_email: str | None = None
-    applied_at: str | None = None
+    stage_date: str | None = None
     status: str = ApplicationStatus.applied.value
     notes: str | None = None
 
@@ -142,6 +143,7 @@ class ApplicationUpdate(BaseModel):
     contact_phone: str | None = None
     contact_email: str | None = None
     interview_rounds: list[InterviewRound] | None = None
+    stage_date: str | None = None
     applied_at: str | None = None
 
 
@@ -150,6 +152,7 @@ class BulkStatusUpdate(BaseModel):
 
     application_ids: list[str] = Field(min_length=1)
     status: str
+    stage_date: str | None = None
 
 
 class BulkDelete(BaseModel):

@@ -1030,7 +1030,7 @@
       "addInterviewRound": "라운드 추가",
       "roundName": "라운드 이름",
       "scheduledAt": "예정 날짜 및 시간",
-      "probability": "면접 점수 (%)",
+      "probability": "성과 점수%",
       "removeInterviewRound": "면접 라운드 삭제",
       "jobDescription": "채용 공고",
       "noJobDescription": "등록된 채용 공고가 없습니다.",
@@ -1066,12 +1066,22 @@
       "contactName": "담당자 이름",
       "contactPhone": "담당자 전화번호",
       "contactEmail": "담당자 이메일",
-      "applicationDate": "지원 날짜",
+      "date": "날짜",
       "optional": "선택 사항",
       "status": "상태",
       "submit": "추가",
       "validation": "이력서를 선택하고 채용 공고를 붙여넣으세요.",
       "failed": "지원 항목을 생성할 수 없습니다."
+    },
+    "stageDate": {
+      "title": "이 단계는 언제 시작되었나요?",
+      "description": "지원서가 {stage}(으)로 이동한 날짜를 선택하세요.",
+      "date": "단계 날짜",
+      "confirm": "날짜 저장"
+    },
+    "timeline": {
+      "title": "지원 타임라인",
+      "days": "{value}일"
     },
     "errors": {
       "loadFailed": "지원 내역을 불러올 수 없습니다.",

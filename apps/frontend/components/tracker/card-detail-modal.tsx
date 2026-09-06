@@ -19,6 +19,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dropdown } from '@/components/ui/dropdown';
+import { StageDateDialog } from './stage-date-dialog';
+import { ApplicationTimeline } from './application-timeline';
 import { useTranslations } from '@/lib/i18n';
 import {
   APPLICATION_CURRENCIES,
@@ -59,12 +61,14 @@ export function CardDetailModal({
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactEmail, setContactEmail] = useState('');
-  const [applicationDate, setApplicationDate] = useState('');
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [notes, setNotes] = useState('');
   const [interviewRounds, setInterviewRounds] = useState<InterviewRound[]>([]);
   const [saving, setSaving] = useState(false);
   const [notesError, setNotesError] = useState<string | null>(null);
+  const [stageDate, setStageDate] = useState<string | null>(null);
+  const [pendingStatus, setPendingStatus] = useState<ApplicationStatus | null>(null);
+  const [stageDateOpen, setStageDateOpen] = useState(false);
 
   useEffect(() => {
     if (!open || !applicationId) {
@@ -85,8 +89,8 @@ export function CardDetailModal({
         setContactName(data.contact_name ?? '');
         setContactPhone(data.contact_phone ?? '');
         setContactEmail(data.contact_email ?? '');
-        setApplicationDate(data.applied_at ? data.applied_at.slice(0, 10) : '');
         setStatus(data.status);
+        setStageDate(data.stage_dates[data.status] ?? null);
         setNotes(data.notes ?? '');
         setInterviewRounds(data.interview_rounds ?? []);
         setNotesError(null);
@@ -109,6 +113,7 @@ export function CardDetailModal({
 
   const handleSave = async () => {
     if (!applicationId) return;
+    const originalStatus = detail?.status;
     setSaving(true);
     setNotesError(null);
     try {
@@ -126,8 +131,8 @@ export function CardDetailModal({
           round_name: round.round_name.trim(),
           probability: round.probability === null ? null : Number(round.probability),
         })),
-        applied_at: applicationDate || null,
         status,
+        stage_date: originalStatus && status !== originalStatus ? stageDate : undefined,
         notes,
       });
       setDetail((current) => (current ? { ...current, ...updated } : current));
@@ -148,6 +153,23 @@ export function CardDetailModal({
     ]);
   };
 
+  const requestStatusChange = (nextStatus: ApplicationStatus) => {
+    if (!detail || nextStatus === detail.status) {
+      setStatus(nextStatus);
+      return;
+    }
+    setPendingStatus(nextStatus);
+    setStageDateOpen(true);
+  };
+
+  const confirmStatusChange = (date: string) => {
+    if (!pendingStatus) return;
+    setStatus(pendingStatus);
+    setStageDate(date);
+    setPendingStatus(null);
+    setStageDateOpen(false);
+  };
+
   const resumeAvailable = Boolean(detail?.resume);
 
   return (
@@ -164,6 +186,12 @@ export function CardDetailModal({
           </div>
         ) : detail ? (
           <div className="space-y-4">
+            <ApplicationTimeline
+              stageDates={detail.stage_dates}
+              appliedAt={detail.applied_at}
+              interviewRounds={interviewRounds}
+              currentStatus={status}
+            />
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor="card-company">{t('tracker.manualAdd.company')}</Label>
@@ -234,18 +262,7 @@ export function CardDetailModal({
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1">
-                <Label htmlFor="card-application-date">
-                  {t('tracker.manualAdd.applicationDate')}
-                </Label>
-                <Input
-                  id="card-application-date"
-                  type="date"
-                  value={applicationDate}
-                  onChange={(e) => setApplicationDate(e.target.value)}
-                />
-              </div>
+            <div className="grid gap-3 sm:grid-cols-1">
               <Dropdown
                 label={t('tracker.manualAdd.status')}
                 options={columns.map((column) => ({
@@ -253,7 +270,7 @@ export function CardDetailModal({
                   label: column.is_system ? t(`tracker.columns.${column.column_id}`) : column.label,
                 }))}
                 value={status}
-                onChange={(value) => setStatus(value as ApplicationStatus)}
+                onChange={(value) => requestStatusChange(value as ApplicationStatus)}
               />
             </div>
 
@@ -292,6 +309,7 @@ export function CardDetailModal({
                         )
                       )
                     }
+                    placeholder={t('tracker.modal.scheduledAt')}
                   />
                   <Input
                     aria-label={t('tracker.modal.probability')}
@@ -311,7 +329,8 @@ export function CardDetailModal({
                         )
                       )
                     }
-                    placeholder="0-100"
+                    className="placeholder:text-[10px]"
+                    placeholder={t('tracker.modal.probability')}
                   />
                   <Button
                     type="button"
@@ -385,6 +404,14 @@ export function CardDetailModal({
           </Button>
         </DialogFooter>
       </DialogContent>
+      <StageDateDialog
+        open={stageDateOpen}
+        onOpenChange={(open) => {
+          setStageDateOpen(open);
+          if (!open) setPendingStatus(null);
+        }}
+        onConfirm={confirmStatusChange}
+      />
     </Dialog>
   );
 }

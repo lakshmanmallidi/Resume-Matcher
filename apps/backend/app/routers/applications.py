@@ -169,7 +169,7 @@ async def create_application(request: ManualApplicationCreate) -> ApplicationRes
             contact_name=request.contact_name,
             contact_phone=request.contact_phone,
             contact_email=request.contact_email,
-            applied_at=request.applied_at,
+            stage_dates={request.status: request.stage_date} if request.stage_date else None,
             notes=request.notes,
         )
     except Exception as e:
@@ -220,7 +220,9 @@ async def bulk_update_applications(request: BulkStatusUpdate) -> ApplicationActi
     try:
         if request.status not in await _column_ids():
             raise HTTPException(status_code=422, detail="Unknown tracker column")
-        moved = await db.bulk_update_applications(request.application_ids, request.status)
+        moved = await db.bulk_update_applications(
+            request.application_ids, request.status, request.stage_date
+        )
     except Exception as e:
         logger.error("Failed to bulk-update applications: %s", e)
         raise HTTPException(status_code=500, detail="Failed to move applications. Please try again.")

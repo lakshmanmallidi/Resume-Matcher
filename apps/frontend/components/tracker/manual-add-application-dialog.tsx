@@ -58,7 +58,7 @@ export function ManualAddApplicationDialog({
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactEmail, setContactEmail] = useState('');
-  const [applicationDate, setApplicationDate] = useState(getToday());
+  const [stageDate, setStageDate] = useState(getToday());
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +91,7 @@ export function ManualAddApplicationDialog({
     setContactName('');
     setContactPhone('');
     setContactEmail('');
-    setApplicationDate(getToday());
+    setStageDate(getToday());
     setStatus('applied');
     setError(null);
   };
@@ -115,7 +115,7 @@ export function ManualAddApplicationDialog({
         contact_name: contactName.trim() || undefined,
         contact_phone: contactPhone.trim() || undefined,
         contact_email: contactEmail.trim() || undefined,
-        applied_at: applicationDate || undefined,
+        stage_date: stageDate || undefined,
         status,
       });
       reset();
@@ -240,14 +240,12 @@ export function ManualAddApplicationDialog({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label htmlFor="manual-application-date">
-                {t('tracker.manualAdd.applicationDate')}
-              </Label>
+              <Label htmlFor="manual-stage-date">{t('tracker.manualAdd.date')}</Label>
               <Input
-                id="manual-application-date"
+                id="manual-stage-date"
                 type="date"
-                value={applicationDate}
-                onChange={(e) => setApplicationDate(e.target.value)}
+                value={stageDate}
+                onChange={(e) => setStageDate(e.target.value)}
               />
             </div>
             <div className="space-y-1">
