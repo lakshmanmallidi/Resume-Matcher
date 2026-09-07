@@ -54,6 +54,7 @@ export function CardDetailModal({
   const [detail, setDetail] = useState<ApplicationDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [company, setCompany] = useState('');
+  const [location, setLocation] = useState('');
   const [role, setRole] = useState('');
   const [ctcAmount, setCtcAmount] = useState('');
   const [ctcMultiplier, setCtcMultiplier] = useState<ApplicationCtcMultiplier>('L');
@@ -82,6 +83,7 @@ export function CardDetailModal({
         if (cancelled) return;
         setDetail(data);
         setCompany(data.company ?? '');
+        setLocation(data.location ?? '');
         setRole(data.role ?? '');
         setCtcAmount(data.ctc_amount === null ? '' : String(data.ctc_amount));
         setCtcMultiplier((data.ctc_multiplier as ApplicationCtcMultiplier) || 'L');
@@ -119,6 +121,7 @@ export function CardDetailModal({
     try {
       const updated = await updateApplication(applicationId, {
         company: company.trim() || null,
+        location: location.trim() || null,
         role: role.trim() || null,
         ctc_amount: ctcAmount === '' ? null : Number(ctcAmount),
         ctc_multiplier: ctcAmount === '' ? null : ctcMultiplier,
@@ -200,6 +203,14 @@ export function CardDetailModal({
                   id="card-company"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="card-location">{t('tracker.manualAdd.location')}</Label>
+                <Input
+                  id="card-location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
                 />
               </div>
               <div className="space-y-1">

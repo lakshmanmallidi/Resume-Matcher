@@ -49,6 +49,7 @@ export function ApplicationCard({
   };
 
   const company = application.company?.trim();
+  const location = application.location?.trim();
   const role = application.role?.trim();
   const probabilities = application.interview_rounds
     .map((round) => round.probability)
@@ -59,6 +60,41 @@ export function ApplicationCard({
           probabilities.reduce((sum, probability) => sum + probability, 0) / probabilities.length
         )
       : null;
+
+  const stageDateValues = Object.values(application.stage_dates);
+  const allDates = [
+    ...stageDateValues,
+    ...(application.applied_at && !stageDateValues.includes(application.applied_at)
+      ? [application.applied_at]
+      : []),
+  ];
+  const firstDate =
+    allDates.length > 0
+      ? allDates.reduce((a, b) => (new Date(a).getTime() < new Date(b).getTime() ? a : b))
+      : null;
+  const lastRoundDate = application.interview_rounds
+    .filter((round) => round.scheduled_at)
+    .sort((a, b) => new Date(a.scheduled_at!).getTime() - new Date(b.scheduled_at!).getTime())
+    .at(-1)?.scheduled_at ?? null;
+  const currentStageDate = application.stage_dates[application.status] || application.applied_at;
+  const lastDate = lastRoundDate || currentStageDate || null;
+  const formattedFirstDate = firstDate
+    ? (() => {
+        const d = new Date(firstDate);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = d.toLocaleDateString('en-US', { month: 'short' });
+        return `${day} ${month}, ${d.getFullYear()}`;
+      })()
+    : null;
+  const formattedLastDate = lastDate
+    ? (() => {
+        const d = new Date(lastDate);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = d.toLocaleDateString('en-US', { month: 'short' });
+        return `${day} ${month}, ${d.getFullYear()}`;
+      })()
+    : null;
+  const showDateRange = formattedFirstDate && formattedLastDate && formattedFirstDate !== formattedLastDate;
 
   return (
     <div ref={setNodeRef} style={style}>
@@ -85,6 +121,8 @@ export function ApplicationCard({
             <div className="flex items-start justify-between gap-3">
               <p className="min-w-0 truncate text-sm font-semibold text-ink">
                 {company || t('tracker.card.companyUnknown')}
+                {location && company && <span className="mx-1 text-ink-soft">·</span>}
+                {location && <span className="font-normal text-ink-soft">{location}</span>}
               </p>
               {application.ctc_amount !== null && application.ctc_multiplier && (
                 <span className="shrink-0 font-mono text-xs font-bold text-ink">
@@ -96,6 +134,11 @@ export function ApplicationCard({
             <p className="truncate font-mono text-xs text-ink-soft">
               {role || t('tracker.card.roleUnknown')}
             </p>
+            {showDateRange && (
+              <p className="mt-1 font-mono text-[10px] text-steel-grey">
+                {formattedFirstDate} – {formattedLastDate}
+              </p>
+            )}
             {application.interview_rounds.length > 0 && (
               <div
                 className="mt-2 flex items-center gap-2"

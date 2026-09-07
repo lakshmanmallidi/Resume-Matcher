@@ -414,6 +414,34 @@ class TestUpdateAndMove:
         }
         assert second["column_id"] not in body["stage_dates"]
 
+    async def test_patch_location_updates_and_round_trips(self, isolated_db):
+        card = await _seed_card(isolated_db, company="Acme", location="Remote")
+        async with _client() as client:
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"location": "New York"},
+            )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["company"] == "Acme"
+        assert body["location"] == "New York"
+
+    async def test_manual_add_accepts_location(self, isolated_db):
+        async with _client() as client:
+            resp = await client.post(
+                "/api/v1/applications",
+                json={
+                    "resume_id": "res-1",
+                    "job_description": "JD text",
+                    "company": "Acme",
+                    "location": "Remote",
+                },
+            )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["company"] == "Acme"
+        assert body["location"] == "Remote"
+
     async def test_patch_unknown_returns_404(self, isolated_db):
         async with _client() as client:
             resp = await client.patch("/api/v1/applications/nope", json={"notes": "x"})

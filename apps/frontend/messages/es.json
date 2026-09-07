@@ -1064,6 +1064,7 @@
       "jobDescription": "Descripción del empleo",
       "jobDescriptionPlaceholder": "Pega aquí la descripción del empleo…",
       "company": "Empresa",
+      "location": "Ubicación",
       "role": "Puesto",
       "ctc": "CTC / año",
       "multiplier": "Multiplicador",

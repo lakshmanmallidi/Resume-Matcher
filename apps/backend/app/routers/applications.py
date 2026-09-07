@@ -162,6 +162,7 @@ async def create_application(request: ManualApplicationCreate) -> ApplicationRes
             resume_id=request.resume_id,
             status=request.status,
             company=company,
+            location=request.location,
             role=role,
             ctc_amount=request.ctc_amount,
             ctc_multiplier=request.ctc_multiplier,

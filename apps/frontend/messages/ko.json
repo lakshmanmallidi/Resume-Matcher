@@ -1064,6 +1064,7 @@
       "jobDescription": "채용 공고",
       "jobDescriptionPlaceholder": "채용 공고를 여기에 붙여넣으세요…",
       "company": "회사",
+      "location": "위치",
       "role": "직무",
       "ctc": "연간 CTC",
       "multiplier": "단위",

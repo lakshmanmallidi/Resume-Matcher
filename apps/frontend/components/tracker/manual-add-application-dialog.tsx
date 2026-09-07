@@ -51,6 +51,7 @@ export function ManualAddApplicationDialog({
   const [resumeId, setResumeId] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [company, setCompany] = useState('');
+  const [location, setLocation] = useState('');
   const [role, setRole] = useState('');
   const [ctcAmount, setCtcAmount] = useState('');
   const [ctcMultiplier, setCtcMultiplier] = useState<ApplicationCtcMultiplier>('L');
@@ -84,6 +85,7 @@ export function ManualAddApplicationDialog({
   const reset = () => {
     setJobDescription('');
     setCompany('');
+    setLocation('');
     setRole('');
     setCtcAmount('');
     setCtcMultiplier('L');
@@ -108,6 +110,7 @@ export function ManualAddApplicationDialog({
         resume_id: resumeId,
         job_description: jobDescription.trim(),
         company: company.trim() || undefined,
+        location: location.trim() || undefined,
         role: role.trim() || undefined,
         ctc_amount: ctcAmount === '' ? undefined : Number(ctcAmount),
         ctc_multiplier: ctcAmount === '' ? undefined : ctcMultiplier,
@@ -192,6 +195,15 @@ export function ManualAddApplicationDialog({
                 id="manual-company"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
+                placeholder={t('tracker.manualAdd.optional')}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="manual-location">{t('tracker.manualAdd.location')}</Label>
+              <Input
+                id="manual-location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 placeholder={t('tracker.manualAdd.optional')}
               />
             </div>

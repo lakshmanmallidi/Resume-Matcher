@@ -71,6 +71,7 @@ class ApplicationResponse(BaseModel):
     master_resume_id: str | None = None
     status: str
     company: str | None = None
+    location: str | None = None
     role: str | None = None
     ctc_amount: float | None = Field(default=None, ge=0)
     ctc_multiplier: str | None = None
@@ -116,6 +117,7 @@ class ManualApplicationCreate(BaseModel):
     resume_id: str
     job_description: str = Field(min_length=1)
     company: str | None = None
+    location: str | None = None
     role: str | None = None
     ctc_amount: float | None = Field(default=None, ge=0)
     ctc_multiplier: str | None = None
@@ -135,6 +137,7 @@ class ApplicationUpdate(BaseModel):
     position: int | None = None
     notes: str | None = None
     company: str | None = None
+    location: str | None = None
     role: str | None = None
     ctc_amount: float | None = Field(default=None, ge=0)
     ctc_multiplier: str | None = None

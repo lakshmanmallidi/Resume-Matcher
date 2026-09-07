@@ -1064,6 +1064,7 @@
       "jobDescription": "职位描述",
       "jobDescriptionPlaceholder": "在此粘贴职位描述……",
       "company": "公司",
+      "location": "地点",
       "role": "职位",
       "ctc": "年度 CTC",
       "multiplier": "倍率",

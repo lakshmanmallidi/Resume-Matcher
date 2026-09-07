@@ -15,6 +15,7 @@ function card(id: string, status: ApplicationStatus, position: number): Applicat
     master_resume_id: null,
     status,
     company: null,
+    location: null,
     role: null,
     ctc_amount: null,
     ctc_multiplier: null,

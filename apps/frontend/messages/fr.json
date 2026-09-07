@@ -1064,6 +1064,7 @@
       "jobDescription": "Fiche de poste",
       "jobDescriptionPlaceholder": "Collez la fiche de poste ici…",
       "company": "Entreprise",
+      "location": "Lieu",
       "role": "Poste",
       "ctc": "CTC / an",
       "multiplier": "Multiplicateur",

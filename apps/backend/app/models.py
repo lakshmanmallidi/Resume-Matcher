@@ -115,6 +115,7 @@ class Application(Base):
     master_resume_id: Mapped[str | None] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, default="applied", index=True)
     company: Mapped[str | None] = mapped_column(String, nullable=True)
+    location: Mapped[str | None] = mapped_column(String, nullable=True)
     role: Mapped[str | None] = mapped_column(String, nullable=True)
     ctc_amount: Mapped[float | None] = mapped_column(Float, nullable=True)
     ctc_multiplier: Mapped[str | None] = mapped_column(String, nullable=True)

@@ -36,6 +36,7 @@ export interface Application {
   master_resume_id: string | null;
   status: ApplicationStatus;
   company: string | null;
+  location: string | null;
   role: string | null;
   ctc_amount: number | null;
   ctc_multiplier: string | null;
@@ -85,6 +86,7 @@ export interface ManualApplicationCreate {
   resume_id: string;
   job_description: string;
   company?: string;
+  location?: string;
   role?: string;
   ctc_amount?: number;
   ctc_multiplier?: ApplicationCtcMultiplier;
@@ -102,6 +104,7 @@ export interface ApplicationUpdate {
   position?: number;
   notes?: string;
   company?: string | null;
+  location?: string | null;
   role?: string | null;
   ctc_amount?: number | null;
   ctc_multiplier?: ApplicationCtcMultiplier | null;

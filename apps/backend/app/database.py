@@ -215,6 +215,7 @@ class Database:
             "master_resume_id": row.master_resume_id,
             "status": row.status,
             "company": row.company,
+            "location": row.location,
             "role": row.role,
             "ctc_amount": row.ctc_amount,
             "ctc_multiplier": row.ctc_multiplier,
@@ -614,6 +615,7 @@ class Database:
         master_resume_id: str | None = None,
         status: str = "applied",
         company: str | None = None,
+        location: str | None = None,
         role: str | None = None,
         ctc_amount: float | None = None,
         ctc_multiplier: str | None = None,
@@ -657,6 +659,7 @@ class Database:
                 master_resume_id=master_resume_id,
                 status=status,
                 company=company,
+                location=location,
                 role=role,
                 ctc_amount=ctc_amount,
                 ctc_multiplier=ctc_multiplier,
@@ -841,6 +844,7 @@ class Database:
 
             for key in (
                 "company",
+                "location",
                 "role",
                 "ctc_amount",
                 "ctc_multiplier",

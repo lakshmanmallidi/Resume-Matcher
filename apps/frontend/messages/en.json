@@ -1064,6 +1064,7 @@
       "jobDescription": "Job Description",
       "jobDescriptionPlaceholder": "Paste the job description here…",
       "company": "Company",
+      "location": "Location",
       "role": "Role",
       "ctc": "CTC / annum",
       "multiplier": "Multiplier",
