@@ -2,7 +2,9 @@
 
 import json
 import logging
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 
@@ -62,6 +64,33 @@ def _effective_api_base(stored: dict) -> str | None:
     return stored.get("api_base") or settings.llm_api_base or None
 
 router = APIRouter(prefix="/config", tags=["Configuration"])
+
+_BACKUP_FORMAT = "resume-matcher-backup"
+_BACKUP_COLLECTIONS = (
+    "resumes",
+    "jobs",
+    "improvements",
+    "applications",
+    "tracker_columns",
+)
+
+
+def _validate_backup(payload: Any) -> dict[str, list[dict[str, Any]]]:
+    """Validate the stable shape of an exported data file before importing it."""
+    if not isinstance(payload, dict) or payload.get("format") != _BACKUP_FORMAT:
+        raise HTTPException(status_code=400, detail="Invalid backup format")
+    if payload.get("version") != 1 or not isinstance(payload.get("data"), dict):
+        raise HTTPException(status_code=400, detail="Unsupported backup version")
+    data = payload["data"]
+    if set(data) != set(_BACKUP_COLLECTIONS):
+        raise HTTPException(status_code=400, detail="Backup data is incomplete")
+    if any(
+        not isinstance(data[name], list)
+        or any(not isinstance(item, dict) for item in data[name])
+        for name in _BACKUP_COLLECTIONS
+    ):
+        raise HTTPException(status_code=400, detail="Backup data is invalid")
+    return data
 
 
 def _get_config_path() -> Path:
@@ -672,3 +701,24 @@ async def reset_database_endpoint(request: ResetDatabaseRequest) -> dict:
         )
     await db.reset_database()
     return {"message": "Database and all data have been reset successfully"}
+
+
+@router.get("/export")
+async def export_database_endpoint() -> dict[str, Any]:
+    """Export user data without exposing encrypted API keys."""
+    return {
+        "format": _BACKUP_FORMAT,
+        "version": 1,
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "data": await db.export_data(),
+    }
+
+
+@router.post("/import")
+async def import_database_endpoint(payload: dict[str, Any]) -> dict[str, str]:
+    """Replace user data from a validated export, preserving API keys."""
+    if payload.get("confirm") != "IMPORT_ALL_DATA":
+        raise HTTPException(status_code=400, detail="Confirmation required")
+    data = _validate_backup(payload.get("backup"))
+    await db.import_data(data)
+    return {"message": "Data imported successfully"}

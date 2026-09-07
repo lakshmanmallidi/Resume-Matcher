@@ -30,6 +30,7 @@
     "unknown": "Unknown",
     "keysCleared": "API keys cleared successfully",
     "databaseReset": "Database reset successfully",
+    "dataImported": "Data imported successfully",
     "popupBlocked": "Popup blocked. Please allow popups or open this URL manually: {url}"
   },
   "home": {
@@ -634,6 +635,8 @@
     "clearApiKeysDescription": "Removes all stored API keys from the configuration. This action cannot be undone.",
     "resetDatabase": "Reset Database",
     "resetDatabaseDescription": "Deletes ALL data including resumes, jobs, and generated content. This action cannot be undone.",
+    "dataBackup": { "title": "Data Backup", "description": "Export or replace your resumes, jobs, generated content, and tracker data as a JSON backup.", "export": "Export Data", "import": "Import Data" },
+    "errors": { "failedToExportData": "Unable to export data. Please try again.", "invalidDataBackup": "That file is not a valid data backup.", "failedToImportData": "Unable to import data. Check the backup and try again." },
     "llmConfigurationTitle": "LLM Configuration",
     "providerLabel": "Provider",
     "statusCards": {
@@ -916,7 +919,9 @@
     "clearApiKeys": "Clear All API Keys?",
     "clearApiKeysDescription": "You'll need to re-enter them before using AI features again.",
     "resetDatabase": "Reset everything and start over?",
-    "resetDatabaseDescription": "This permanently deletes every resume, job description, and generated document."
+    "resetDatabaseDescription": "This permanently deletes every resume, job description, and generated document.",
+    "importData": "Replace all data with this backup?",
+    "importDataDescription": "This permanently replaces your resumes, jobs, generated content, and tracker data. Stored API keys and settings are preserved."
   },
   "resumeWizard": {
     "title": "Resume Wizard",

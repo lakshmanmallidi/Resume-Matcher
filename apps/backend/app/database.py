@@ -397,6 +397,66 @@ class Database:
             result = await session.execute(select(Resume).order_by(Resume.created_at))
             return [self._resume_to_dict(row) for row in result.scalars().all()]
 
+    async def export_data(self) -> dict[str, list[dict[str, Any]]]:
+        """Return all user data in a portable, JSON-compatible structure."""
+        async with self._session() as session:
+            resumes = await session.execute(select(Resume).order_by(Resume.created_at))
+            jobs = await session.execute(select(Job).order_by(Job.created_at))
+            improvements = await session.execute(
+                select(Improvement).order_by(Improvement.created_at)
+            )
+            applications = await session.execute(
+                select(Application).order_by(Application.status, Application.position)
+            )
+            columns = await session.execute(
+                select(TrackerColumn).order_by(TrackerColumn.position, TrackerColumn.created_at)
+            )
+            return {
+                "resumes": [self._resume_to_dict(row) for row in resumes.scalars().all()],
+                "jobs": [self._job_to_dict(row) for row in jobs.scalars().all()],
+                "improvements": [
+                    self._improvement_to_dict(row) for row in improvements.scalars().all()
+                ],
+                "applications": [
+                    self._application_to_dict(row) for row in applications.scalars().all()
+                ],
+                "tracker_columns": [
+                    self._tracker_column_to_dict(row) for row in columns.scalars().all()
+                ],
+            }
+
+    async def import_data(self, data: dict[str, list[dict[str, Any]]]) -> None:
+        """Replace user data from a validated export payload."""
+        async with self._session() as session:
+            await session.execute(delete(Application))
+            await session.execute(delete(Improvement))
+            await session.execute(delete(Job))
+            await session.execute(delete(Resume))
+            await session.execute(delete(TrackerColumn))
+
+            for item in data["resumes"]:
+                session.add(Resume(**item))
+            for item in data["jobs"]:
+                metadata = {
+                    key: value for key, value in item.items() if key not in _JOB_CORE_FIELDS
+                }
+                session.add(
+                    Job(
+                        job_id=item["job_id"],
+                        content=item["content"],
+                        resume_id=item.get("resume_id"),
+                        created_at=item["created_at"],
+                        metadata_json=metadata,
+                    )
+                )
+            for item in data["improvements"]:
+                session.add(Improvement(**item))
+            for item in data["applications"]:
+                session.add(Application(**item))
+            for item in data["tracker_columns"]:
+                session.add(TrackerColumn(**item))
+            await session.commit()
+
     async def set_master_resume(self, resume_id: str) -> bool:
         """Set a resume as the master, unsetting any existing master.
 

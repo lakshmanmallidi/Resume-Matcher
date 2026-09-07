@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -20,6 +20,8 @@ import {
   fetchApiKeyStatus,
   updateApiKeys,
   deleteApiKey,
+  exportDatabase,
+  importDatabase,
   llmProviderToKeyProvider,
   API_KEY_PROVIDER_INFO,
   type LLMConfigUpdate,
@@ -63,6 +65,7 @@ import {
 import { useLanguage } from '@/lib/context/language-context';
 import { useTranslations } from '@/lib/i18n';
 import { RESUME_DRAFT_STORAGE_PREFIX, safeStorage } from '@/lib/utils/resume-draft-storage';
+import { downloadBlobAsFile } from '@/lib/utils/download';
 import type { SupportedLanguage } from '@/lib/api/config';
 import type { Locale } from '@/i18n/config';
 
@@ -171,6 +174,11 @@ export default function SettingsPage() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [successMessage, setSuccessDialogMessage] = useState({ title: '', description: '' });
   const [isResetting, setIsResetting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [pendingBackup, setPendingBackup] = useState<Awaited<
+    ReturnType<typeof exportDatabase>
+  > | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   // Language settings
   const {
@@ -650,6 +658,53 @@ export default function SettingsPage() {
     } finally {
       setIsResetting(false);
       setShowResetDatabaseDialog(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    try {
+      const backup = await exportDatabase();
+      downloadBlobAsFile(
+        new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }),
+        `resume-matcher-backup-${new Date().toISOString().slice(0, 10)}.json`
+      );
+    } catch (err) {
+      console.error('Failed to export data', err);
+      setError(t('settings.errors.failedToExportData'));
+    }
+  };
+
+  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    try {
+      const backup = JSON.parse(await file.text()) as Awaited<ReturnType<typeof exportDatabase>>;
+      setPendingBackup(backup);
+    } catch (err) {
+      console.error('Failed to read data backup', err);
+      setError(t('settings.errors.invalidDataBackup'));
+    }
+  };
+
+  const handleImportData = async () => {
+    if (!pendingBackup) return;
+    setIsImporting(true);
+    try {
+      await importDatabase(pendingBackup);
+      await refreshStatus();
+      setPendingBackup(null);
+      setError(null);
+      setSuccessDialogMessage({
+        title: t('common.success'),
+        description: t('common.dataImported'),
+      });
+      setShowSuccessDialog(true);
+    } catch (err) {
+      console.error('Failed to import data', err);
+      setError(t('settings.errors.failedToImportData'));
+    } finally {
+      setIsImporting(false);
     }
   };
 
@@ -1425,6 +1480,34 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </div>
+
+            <div className="border border-black bg-white p-6 space-y-4">
+              <div>
+                <h3 className="font-bold text-sm mb-1">{t('settings.dataBackup.title')}</h3>
+                <p className="text-xs text-steel-grey">{t('settings.dataBackup.description')}</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button variant="outline" onClick={handleExportData} disabled={isImporting}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  {t('settings.dataBackup.export')}
+                </Button>
+                <input
+                  ref={importInputRef}
+                  type="file"
+                  accept="application/json,.json"
+                  className="hidden"
+                  onChange={handleImportFile}
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => importInputRef.current?.click()}
+                  disabled={isImporting}
+                >
+                  <Database className="w-4 h-4 mr-2" />
+                  {t('settings.dataBackup.import')}
+                </Button>
+              </div>
+            </div>
           </section>
         </div>
 
@@ -1486,6 +1569,18 @@ export default function SettingsPage() {
         onConfirm={() => {
           if (keyToDelete) void handleDeleteApiKey(keyToDelete);
         }}
+      />
+
+      <ConfirmDialog
+        open={pendingBackup !== null}
+        onOpenChange={(open) => {
+          if (!open && !isImporting) setPendingBackup(null);
+        }}
+        title={t('confirmations.importData')}
+        description={t('confirmations.importDataDescription')}
+        confirmLabel={t('settings.dataBackup.import')}
+        variant="warning"
+        onConfirm={handleImportData}
       />
 
       <ConfirmDialog

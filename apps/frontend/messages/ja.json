@@ -30,6 +30,7 @@
     "unknown": "不明",
     "keysCleared": "APIキーが正常にクリアされました",
     "databaseReset": "データベースが正常にリセットされました",
+    "dataImported": "Data imported successfully",
     "popupBlocked": "ポップアップがブロックされました。ポップアップを許可するか、次のURLを手動で開いてください: {url}"
   },
   "home": {
@@ -634,6 +635,8 @@
     "clearApiKeysDescription": "設定から保存されているすべてのAPIキーを削除します。この操作は取り消せません。",
     "resetDatabase": "データベースをリセット",
     "resetDatabaseDescription": "履歴書、求人、生成されたコンテンツを含むすべてのデータを削除します。この操作は取り消せません。",
+    "dataBackup": { "title": "Data Backup", "description": "Export or replace your resumes, jobs, generated content, and tracker data as a JSON backup.", "export": "Export Data", "import": "Import Data" },
+    "errors": { "failedToExportData": "Unable to export data. Please try again.", "invalidDataBackup": "That file is not a valid data backup.", "failedToImportData": "Unable to import data. Check the backup and try again." },
     "llmConfigurationTitle": "LLM 設定",
     "providerLabel": "プロバイダー",
     "statusCards": {
@@ -916,7 +919,9 @@
     "clearApiKeys": "すべてのAPIキーを消去しますか？",
     "clearApiKeysDescription": "AI機能を再び使うには、もう一度入力が必要になります。",
     "resetDatabase": "すべてリセットして最初からやり直しますか？",
-    "resetDatabaseDescription": "すべての履歴書、求人内容、生成されたドキュメントが完全に削除されます。"
+    "resetDatabaseDescription": "すべての履歴書、求人内容、生成されたドキュメントが完全に削除されます。",
+    "importData": "Replace all data with this backup?",
+    "importDataDescription": "This permanently replaces your resumes, jobs, generated content, and tracker data. Stored API keys and settings are preserved."
   },
   "resumeWizard": {
     "title": "履歴書ウィザード",

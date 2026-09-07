@@ -191,6 +191,7 @@ export function CardDetailModal({
               appliedAt={detail.applied_at}
               interviewRounds={interviewRounds}
               currentStatus={status}
+              columns={columns}
             />
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">

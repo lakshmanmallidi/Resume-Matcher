@@ -1,7 +1,11 @@
 'use client';
 
 import React from 'react';
-import { APPLICATION_STATUS_ORDER, type InterviewRound } from '@/lib/api/tracker';
+import {
+  APPLICATION_STATUS_ORDER,
+  type InterviewRound,
+  type TrackerColumn,
+} from '@/lib/api/tracker';
 import { useTranslations } from '@/lib/i18n';
 
 interface ApplicationTimelineProps {
@@ -9,12 +13,14 @@ interface ApplicationTimelineProps {
   appliedAt: string | null;
   interviewRounds: InterviewRound[];
   currentStatus: string;
+  columns: TrackerColumn[];
 }
 
 interface TimelineEvent {
   label: string;
   date: string;
   isStage: boolean;
+  stageKey?: string;
 }
 
 const daysBetween = (from: string, to: string): number =>
@@ -25,25 +31,48 @@ export function ApplicationTimeline({
   appliedAt,
   interviewRounds,
   currentStatus,
+  columns,
 }: ApplicationTimelineProps) {
   const { t } = useTranslations();
-  const effectiveStageDates: Record<string, string> = {
-    ...stageDates,
-    ...(Object.keys(stageDates).length === 0 && appliedAt ? { applied: appliedAt } : {}),
-  };
+  const customStageIds = columns
+    .filter((column) => !column.is_system)
+    .map((column) => column.column_id);
+  const timelineStageIds = [...APPLICATION_STATUS_ORDER, ...customStageIds];
+  const effectiveStageDates: Record<string, string> = timelineStageIds.reduce(
+    (dates, status) => {
+      if (stageDates[status]) dates[status] = stageDates[status];
+      return dates;
+    },
+    Object.keys(stageDates).length === 0 && appliedAt
+      ? ({ applied: appliedAt } as Record<string, string>)
+      : ({} as Record<string, string>)
+  );
   const currentStageIndex = APPLICATION_STATUS_ORDER.indexOf(currentStatus);
   const interviewStageIndex = APPLICATION_STATUS_ORDER.indexOf('interview');
-  const stageEvents: TimelineEvent[] = APPLICATION_STATUS_ORDER.filter(
-    (status) => effectiveStageDates[status]
-  )
+  const currentColumnPosition = columns.find(
+    (column) => column.column_id === currentStatus
+  )?.position;
+  const interviewColumnPosition = columns.find(
+    (column) => column.column_id === 'interview'
+  )?.position;
+  const isAtOrAfterInterview =
+    currentStageIndex >= interviewStageIndex ||
+    (currentColumnPosition !== undefined &&
+      interviewColumnPosition !== undefined &&
+      currentColumnPosition >= interviewColumnPosition);
+  const stageEvents: TimelineEvent[] = timelineStageIds
+    .filter((status) => effectiveStageDates[status])
     .map((status) => ({
-      label: t(`tracker.columns.${status}`),
+      label: APPLICATION_STATUS_ORDER.includes(status as (typeof APPLICATION_STATUS_ORDER)[number])
+        ? t(`tracker.columns.${status}`)
+        : columns.find((column) => column.column_id === status)?.label || status,
       date: effectiveStageDates[status],
       isStage: true,
+      stageKey: status,
     }))
     .sort((left, right) => new Date(left.date).getTime() - new Date(right.date).getTime());
   const roundEvents: TimelineEvent[] =
-    currentStageIndex >= interviewStageIndex && effectiveStageDates.interview
+    isAtOrAfterInterview && effectiveStageDates.interview
       ? interviewRounds
           .filter((round) => round.scheduled_at)
           .sort(
@@ -57,9 +86,7 @@ export function ApplicationTimeline({
             isStage: false,
           }))
       : [];
-  const interviewEventIndex = stageEvents.findIndex(
-    (event) => event.label === t('tracker.columns.interview')
-  );
+  const interviewEventIndex = stageEvents.findIndex((event) => event.stageKey === 'interview');
   const events =
     interviewEventIndex >= 0
       ? [

@@ -30,6 +30,7 @@
     "unknown": "Inconnu",
     "keysCleared": "Clés API supprimées avec succès",
     "databaseReset": "Base de données réinitialisée avec succès",
+    "dataImported": "Data imported successfully",
     "popupBlocked": "Fenêtre contextuelle bloquée. Veuillez autoriser les fenêtres contextuelles ou ouvrir cette URL manuellement : {url}"
   },
   "home": {
@@ -634,6 +635,8 @@
     "clearApiKeysDescription": "Supprime toutes les clés API enregistrées de la configuration. Cette action est irréversible.",
     "resetDatabase": "Réinitialiser la base de données",
     "resetDatabaseDescription": "Supprime TOUTES les données, y compris les CV, les postes et le contenu généré. Cette action est irréversible.",
+    "dataBackup": { "title": "Data Backup", "description": "Export or replace your resumes, jobs, generated content, and tracker data as a JSON backup.", "export": "Export Data", "import": "Import Data" },
+    "errors": { "failedToExportData": "Unable to export data. Please try again.", "invalidDataBackup": "That file is not a valid data backup.", "failedToImportData": "Unable to import data. Check the backup and try again." },
     "llmConfigurationTitle": "Configuration LLM",
     "providerLabel": "Fournisseur",
     "statusCards": {
@@ -916,7 +919,9 @@
     "clearApiKeys": "Effacer toutes les clés API ?",
     "clearApiKeysDescription": "Vous devrez les saisir à nouveau avant de pouvoir utiliser les fonctionnalités IA.",
     "resetDatabase": "Tout réinitialiser et recommencer ?",
-    "resetDatabaseDescription": "Cela supprimera définitivement tous les CV, fiches de poste et documents générés."
+    "resetDatabaseDescription": "Cela supprimera définitivement tous les CV, fiches de poste et documents générés.",
+    "importData": "Replace all data with this backup?",
+    "importDataDescription": "This permanently replaces your resumes, jobs, generated content, and tracker data. Stored API keys and settings are preserved."
   },
   "resumeWizard": {
     "title": "Assistant CV",

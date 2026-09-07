@@ -543,3 +543,31 @@ export async function resetDatabase(): Promise<void> {
     throw new Error(data.detail || `Failed to reset database (status ${res.status}).`);
   }
 }
+
+export interface DataBackup {
+  format: 'resume-matcher-backup';
+  version: 1;
+  exported_at: string;
+  data: Record<string, unknown[]>;
+}
+
+export async function exportDatabase(): Promise<DataBackup> {
+  const res = await apiFetch('/config/export', { credentials: 'include' });
+  if (!res.ok) {
+    throw new Error(`Failed to export data (status ${res.status}).`);
+  }
+  return res.json();
+}
+
+export async function importDatabase(backup: DataBackup): Promise<void> {
+  const res = await apiFetch('/config/import', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ confirm: 'IMPORT_ALL_DATA', backup }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.detail || `Failed to import data (status ${res.status}).`);
+  }
+}

@@ -30,6 +30,7 @@
     "unknown": "未知",
     "keysCleared": "API密钥已成功清除",
     "databaseReset": "数据库已成功重置",
+    "dataImported": "Data imported successfully",
     "popupBlocked": "弹窗被阻止。请允许弹窗或手动打开此链接：{url}"
   },
   "home": {
@@ -634,6 +635,8 @@
     "clearApiKeysDescription": "从配置中删除所有存储的 API 密钥。此操作无法撤销。",
     "resetDatabase": "重置数据库",
     "resetDatabaseDescription": "删除所有数据，包括简历、职位和生成的内容。此操作无法撤销。",
+    "dataBackup": { "title": "Data Backup", "description": "Export or replace your resumes, jobs, generated content, and tracker data as a JSON backup.", "export": "Export Data", "import": "Import Data" },
+    "errors": { "failedToExportData": "Unable to export data. Please try again.", "invalidDataBackup": "That file is not a valid data backup.", "failedToImportData": "Unable to import data. Check the backup and try again." },
     "llmConfigurationTitle": "LLM 配置",
     "providerLabel": "提供商",
     "statusCards": {
@@ -916,7 +919,9 @@
     "clearApiKeys": "清除所有 API 密钥？",
     "clearApiKeysDescription": "下次使用 AI 功能前，您需要重新输入它们。",
     "resetDatabase": "重置所有内容并重新开始？",
-    "resetDatabaseDescription": "这将永久删除每一份简历、职位描述和生成的文档。"
+    "resetDatabaseDescription": "这将永久删除每一份简历、职位描述和生成的文档。",
+    "importData": "Replace all data with this backup?",
+    "importDataDescription": "This permanently replaces your resumes, jobs, generated content, and tracker data. Stored API keys and settings are preserved."
   },
   "resumeWizard": {
     "title": "简历向导",

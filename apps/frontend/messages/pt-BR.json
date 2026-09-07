@@ -30,6 +30,7 @@
     "unknown": "Desconhecido",
     "keysCleared": "Chaves de API removidas com sucesso",
     "databaseReset": "Banco de dados redefinido com sucesso",
+    "dataImported": "Data imported successfully",
     "popupBlocked": "Popup bloqueado. Por favor, permita popups ou abra esta URL manualmente: {url}"
   },
   "home": {
@@ -634,6 +635,8 @@
     "clearApiKeysDescription": "Remove todas as chaves de API armazenadas da configuração. Esta ação não pode ser desfeita.",
     "resetDatabase": "Redefinir Banco de Dados",
     "resetDatabaseDescription": "Exclui TODOS os dados incluindo currículos, vagas e conteúdo gerado. Esta ação não pode ser desfeita.",
+    "dataBackup": { "title": "Data Backup", "description": "Export or replace your resumes, jobs, generated content, and tracker data as a JSON backup.", "export": "Export Data", "import": "Import Data" },
+    "errors": { "failedToExportData": "Unable to export data. Please try again.", "invalidDataBackup": "That file is not a valid data backup.", "failedToImportData": "Unable to import data. Check the backup and try again." },
     "llmConfigurationTitle": "Configuração de LLM",
     "providerLabel": "Provedor",
     "statusCards": {
@@ -916,7 +919,9 @@
     "clearApiKeys": "Limpar Todas as Chaves de API?",
     "clearApiKeysDescription": "Você precisará inseri-las novamente antes de usar os recursos de IA.",
     "resetDatabase": "Redefinir tudo e começar de novo?",
-    "resetDatabaseDescription": "Isso excluirá permanentemente cada currículo, descrição de vaga e documento gerado."
+    "resetDatabaseDescription": "Isso excluirá permanentemente cada currículo, descrição de vaga e documento gerado.",
+    "importData": "Replace all data with this backup?",
+    "importDataDescription": "This permanently replaces your resumes, jobs, generated content, and tracker data. Stored API keys and settings are preserved."
   },
   "resumeWizard": {
     "title": "Assistente de currículo",
