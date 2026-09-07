@@ -696,6 +696,12 @@ class Database:
                 raise
             return self._application_to_dict(row)
 
+    async def _ordered_stage_ids(self, session) -> list[str]:
+        result = await session.execute(
+            select(TrackerColumn.column_id).order_by(TrackerColumn.position, TrackerColumn.created_at)
+        )
+        return [row[0] for row in result.all()]
+
     @staticmethod
     def _tracker_column_to_dict(row: TrackerColumn) -> dict[str, Any]:
         return {
@@ -870,18 +876,19 @@ class Database:
                         or (updates.get("applied_at") if new_status == "applied" else None)
                         or _now()
                     )
+                    ordered_stages = await self._ordered_stage_ids(session)
                     old_index = (
-                        APPLICATION_STATUSES.index(old_status)
-                        if old_status in APPLICATION_STATUSES
+                        ordered_stages.index(old_status)
+                        if old_status in ordered_stages
                         else -1
                     )
                     new_index = (
-                        APPLICATION_STATUSES.index(new_status)
-                        if new_status in APPLICATION_STATUSES
+                        ordered_stages.index(new_status)
+                        if new_status in ordered_stages
                         else -1
                     )
                     if new_index >= 0 and old_index >= 0 and new_index < old_index:
-                        for status in APPLICATION_STATUSES[new_index + 1 :]:
+                        for status in ordered_stages[new_index + 1 :]:
                             stage_dates.pop(status, None)
                     stage_dates[new_status] = stage_date
                     row.stage_dates = stage_dates
@@ -929,14 +936,19 @@ class Database:
                 affected_old.add(row.status)
                 if row.status != status:
                     stage_dates = dict(row.stage_dates or {})
+                    ordered_stages = await self._ordered_stage_ids(session)
                     old_index = (
-                        APPLICATION_STATUSES.index(row.status)
-                        if row.status in APPLICATION_STATUSES
+                        ordered_stages.index(row.status)
+                        if row.status in ordered_stages
                         else -1
                     )
-                    new_index = APPLICATION_STATUSES.index(status) if status in APPLICATION_STATUSES else -1
+                    new_index = (
+                        ordered_stages.index(status)
+                        if status in ordered_stages
+                        else -1
+                    )
                     if new_index >= 0 and old_index >= 0 and new_index < old_index:
-                        for forward_status in APPLICATION_STATUSES[new_index + 1 :]:
+                        for forward_status in ordered_stages[new_index + 1 :]:
                             stage_dates.pop(forward_status, None)
                     stage_dates[status] = stage_date or _now()
                     row.stage_dates = stage_dates

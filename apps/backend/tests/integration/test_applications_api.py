@@ -334,6 +334,86 @@ class TestUpdateAndMove:
         assert body["status"] == "saved"
         assert body["stage_dates"] == {"saved": "2026-09-02"}
 
+    async def test_backward_move_from_custom_stage_removes_custom_stage_date(self, isolated_db):
+        async with _client() as client:
+            custom = (await client.post("/api/v1/applications/columns", json={"label": "Phone screen"})).json()
+            card = await _seed_card(
+                isolated_db,
+                job_id="j1",
+                resume_id="r1",
+                status=custom["column_id"],
+                stage_dates={
+                    "applied": "2026-09-01",
+                    custom["column_id"]: "2026-09-02",
+                },
+            )
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"status": "applied", "stage_date": "2026-09-05"},
+            )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["stage_dates"] == {"applied": "2026-09-05"}
+        assert custom["column_id"] not in body["stage_dates"]
+
+    async def test_backward_move_from_fixed_stage_to_custom_stage_removes_forward_dates(self, isolated_db):
+        async with _client() as client:
+            custom = (await client.post("/api/v1/applications/columns", json={"label": "Offer"})).json()
+            await client.patch(
+                f"/api/v1/applications/columns/{custom['column_id']}",
+                json={"position": 5},
+            )
+            card = await _seed_card(
+                isolated_db,
+                job_id="j1",
+                resume_id="r1",
+                status="accepted",
+                stage_dates={
+                    "applied": "2026-09-01",
+                    "interview": "2026-09-02",
+                    "accepted": "2026-09-03",
+                },
+            )
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"status": custom["column_id"], "stage_date": "2026-09-04"},
+            )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["stage_dates"] == {
+            "applied": "2026-09-01",
+            "interview": "2026-09-02",
+            custom["column_id"]: "2026-09-04",
+        }
+        assert "accepted" not in body["stage_dates"]
+
+    async def test_backward_move_between_custom_stages_removes_later_dates(self, isolated_db):
+        async with _client() as client:
+            first = (await client.post("/api/v1/applications/columns", json={"label": "First"})).json()
+            second = (await client.post("/api/v1/applications/columns", json={"label": "Second"})).json()
+            card = await _seed_card(
+                isolated_db,
+                job_id="j1",
+                resume_id="r1",
+                status=second["column_id"],
+                stage_dates={
+                    "applied": "2026-09-01",
+                    first["column_id"]: "2026-09-02",
+                    second["column_id"]: "2026-09-03",
+                },
+            )
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"status": first["column_id"], "stage_date": "2026-09-04"},
+            )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["stage_dates"] == {
+            "applied": "2026-09-01",
+            first["column_id"]: "2026-09-04",
+        }
+        assert second["column_id"] not in body["stage_dates"]
+
     async def test_patch_unknown_returns_404(self, isolated_db):
         async with _client() as client:
             resp = await client.patch("/api/v1/applications/nope", json={"notes": "x"})
@@ -355,6 +435,46 @@ class TestBulkAndDelete:
             board = (await client.get("/api/v1/applications")).json()["columns"]
         assert len(board["rejected"]) == 2
         assert board["applied"] == []
+
+    async def test_bulk_backward_move_from_custom_stage_cleans_custom_dates(self, isolated_db):
+        async with _client() as client:
+            custom = (await client.post("/api/v1/applications/columns", json={"label": "Phone screen"})).json()
+            a = await _seed_card(
+                isolated_db,
+                job_id="j1",
+                resume_id="r1",
+                status=custom["column_id"],
+                stage_dates={
+                    "applied": "2026-09-01",
+                    custom["column_id"]: "2026-09-02",
+                },
+            )
+            b = await _seed_card(
+                isolated_db,
+                job_id="j2",
+                resume_id="r2",
+                status=custom["column_id"],
+                stage_dates={
+                    "applied": "2026-09-01",
+                    custom["column_id"]: "2026-09-02",
+                },
+            )
+            resp = await client.patch(
+                "/api/v1/applications/bulk",
+                json={
+                    "application_ids": [a["application_id"], b["application_id"]],
+                    "status": "applied",
+                    "stage_date": "2026-09-01",
+                },
+            )
+        assert resp.status_code == 200
+        assert resp.json()["affected"] == 2
+        async with _client() as client:
+            board = (await client.get("/api/v1/applications")).json()["columns"]
+        assert len(board["applied"]) == 2
+        for card in board["applied"]:
+            assert custom["column_id"] not in card["stage_dates"]
+            assert card["stage_dates"]["applied"] == "2026-09-01"
 
     async def test_delete_single(self, isolated_db):
         card = await _seed_card(isolated_db)
